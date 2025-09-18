@@ -1,0 +1,5 @@
+# Location: repo root
+# Purpose: exclude embedded Python runtime artifacts from version control
+# Rationale: prevent large vendor binaries from entering Git history
+
+python-embed/
