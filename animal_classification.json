@@ -1,0 +1,552 @@
+{
+  "0 1.png": [
+    {
+      "label": "cat",
+      "score": 0.25830599665641785
+    },
+    {
+      "label": "lynx",
+      "score": 0.25612229108810425
+    },
+    {
+      "label": "puma",
+      "score": 0.2463630735874176
+    },
+    {
+      "label": "raccoon",
+      "score": 0.23862683773040771
+    },
+    {
+      "label": "jaguar",
+      "score": 0.23544295132160187
+    }
+  ],
+  "0 10.png": [
+    {
+      "label": "monkey",
+      "score": 0.30179092288017273
+    },
+    {
+      "label": "chimpanzee",
+      "score": 0.2996364235877991
+    },
+    {
+      "label": "gorilla",
+      "score": 0.2927684783935547
+    },
+    {
+      "label": "sloth",
+      "score": 0.275255024433136
+    },
+    {
+      "label": "lemur",
+      "score": 0.2702552080154419
+    }
+  ],
+  "0 11.png": [
+    {
+      "label": "elephant",
+      "score": 0.2904415726661682
+    },
+    {
+      "label": "jaguar",
+      "score": 0.26314738392829895
+    },
+    {
+      "label": "koala",
+      "score": 0.26275062561035156
+    },
+    {
+      "label": "koala",
+      "score": 0.26275062561035156
+    },
+    {
+      "label": "buffalo",
+      "score": 0.2608393728733063
+    }
+  ],
+  "0 12.png": [
+    {
+      "label": "mouse",
+      "score": 0.2930356562137604
+    },
+    {
+      "label": "rat",
+      "score": 0.2837952971458435
+    },
+    {
+      "label": "wallaby",
+      "score": 0.26639848947525024
+    },
+    {
+      "label": "bat",
+      "score": 0.2656218707561493
+    },
+    {
+      "label": "opossum",
+      "score": 0.2628538906574249
+    }
+  ],
+  "0 13.png": [
+    {
+      "label": "opossum",
+      "score": 0.2713051438331604
+    },
+    {
+      "label": "rat",
+      "score": 0.26060402393341064
+    },
+    {
+      "label": "raccoon",
+      "score": 0.25852078199386597
+    },
+    {
+      "label": "mouse",
+      "score": 0.25844770669937134
+    },
+    {
+      "label": "lynx",
+      "score": 0.25658118724823
+    }
+  ],
+  "0 14.png": [
+    {
+      "label": "panda",
+      "score": 0.3025839030742645
+    },
+    {
+      "label": "red panda",
+      "score": 0.27891775965690613
+    },
+    {
+      "label": "badger",
+      "score": 0.25948166847229004
+    },
+    {
+      "label": "raccoon",
+      "score": 0.2578898072242737
+    },
+    {
+      "label": "lemur",
+      "score": 0.24849942326545715
+    }
+  ],
+  "0 15.png": [
+    {
+      "label": "pig",
+      "score": 0.2902577519416809
+    },
+    {
+      "label": "boar",
+      "score": 0.25831958651542664
+    },
+    {
+      "label": "wild boar",
+      "score": 0.2581203877925873
+    },
+    {
+      "label": "bull",
+      "score": 0.24455296993255615
+    },
+    {
+      "label": "wombat",
+      "score": 0.24218863248825073
+    }
+  ],
+  "0 16.png": [
+    {
+      "label": "rabbit",
+      "score": 0.26841554045677185
+    },
+    {
+      "label": "hare",
+      "score": 0.2651776075363159
+    },
+    {
+      "label": "wallaby",
+      "score": 0.2300255000591278
+    },
+    {
+      "label": "kangaroo",
+      "score": 0.22843705117702484
+    },
+    {
+      "label": "antelope",
+      "score": 0.22574850916862488
+    }
+  ],
+  "0 17.png": [
+    {
+      "label": "raccoon",
+      "score": 0.288045734167099
+    },
+    {
+      "label": "red panda",
+      "score": 0.27899327874183655
+    },
+    {
+      "label": "badger",
+      "score": 0.27275171875953674
+    },
+    {
+      "label": "lynx",
+      "score": 0.27071911096572876
+    },
+    {
+      "label": "cat",
+      "score": 0.26986056566238403
+    }
+  ],
+  "0 18.png": [
+    {
+      "label": "rhinoceros",
+      "score": 0.29239338636398315
+    },
+    {
+      "label": "rabbit",
+      "score": 0.28326892852783203
+    },
+    {
+      "label": "donkey",
+      "score": 0.2811676859855652
+    },
+    {
+      "label": "antelope",
+      "score": 0.2766861915588379
+    },
+    {
+      "label": "pig",
+      "score": 0.2758195996284485
+    }
+  ],
+  "0 19.png": [
+    {
+      "label": "dog",
+      "score": 0.26839348673820496
+    },
+    {
+      "label": "seal",
+      "score": 0.26046958565711975
+    },
+    {
+      "label": "panda",
+      "score": 0.25949960947036743
+    },
+    {
+      "label": "sea lion",
+      "score": 0.25462546944618225
+    },
+    {
+      "label": "bear",
+      "score": 0.25454485416412354
+    }
+  ],
+  "0 2.png": [
+    {
+      "label": "red panda",
+      "score": 0.27868664264678955
+    },
+    {
+      "label": "panda",
+      "score": 0.2742149233818054
+    },
+    {
+      "label": "bear",
+      "score": 0.2723183035850525
+    },
+    {
+      "label": "raccoon",
+      "score": 0.26274722814559937
+    },
+    {
+      "label": "badger",
+      "score": 0.2552761137485504
+    }
+  ],
+  "0 20.png": [
+    {
+      "label": "sheep",
+      "score": 0.27997225522994995
+    },
+    {
+      "label": "opossum",
+      "score": 0.26098865270614624
+    },
+    {
+      "label": "puma",
+      "score": 0.25949642062187195
+    },
+    {
+      "label": "goat",
+      "score": 0.2589527368545532
+    },
+    {
+      "label": "rabbit",
+      "score": 0.25753429532051086
+    }
+  ],
+  "0 21.png": [
+    {
+      "label": "red panda",
+      "score": 0.27147066593170166
+    },
+    {
+      "label": "fox",
+      "score": 0.2658681869506836
+    },
+    {
+      "label": "raccoon",
+      "score": 0.24893268942832947
+    },
+    {
+      "label": "lynx",
+      "score": 0.24587824940681458
+    },
+    {
+      "label": "puma",
+      "score": 0.24329479038715363
+    }
+  ],
+  "0 22.png": [
+    {
+      "label": "puma",
+      "score": 0.26186779141426086
+    },
+    {
+      "label": "lynx",
+      "score": 0.26016557216644287
+    },
+    {
+      "label": "red panda",
+      "score": 0.25625157356262207
+    },
+    {
+      "label": "kangaroo rat",
+      "score": 0.2557078003883362
+    },
+    {
+      "label": "hamster",
+      "score": 0.25128164887428284
+    }
+  ],
+  "0 23.png": [
+    {
+      "label": "kangaroo",
+      "score": 0.25698143243789673
+    },
+    {
+      "label": "deer",
+      "score": 0.25674137473106384
+    },
+    {
+      "label": "moose",
+      "score": 0.25408434867858887
+    },
+    {
+      "label": "boar",
+      "score": 0.25227874517440796
+    },
+    {
+      "label": "antelope",
+      "score": 0.2522526979446411
+    }
+  ],
+  "0 24.png": [
+    {
+      "label": "tiger",
+      "score": 0.27138733863830566
+    },
+    {
+      "label": "jaguar",
+      "score": 0.24958103895187378
+    },
+    {
+      "label": "leopard",
+      "score": 0.24862004816532135
+    },
+    {
+      "label": "puma",
+      "score": 0.2319898158311844
+    },
+    {
+      "label": "cheetah",
+      "score": 0.22976617515087128
+    }
+  ],
+  "0 25.png": [
+    {
+      "label": "fox",
+      "score": 0.27667003870010376
+    },
+    {
+      "label": "lynx",
+      "score": 0.26799485087394714
+    },
+    {
+      "label": "raccoon",
+      "score": 0.26529771089553833
+    },
+    {
+      "label": "wolf",
+      "score": 0.25762566924095154
+    },
+    {
+      "label": "puma",
+      "score": 0.25528448820114136
+    }
+  ],
+  "0 3.png": [
+    {
+      "label": "buffalo",
+      "score": 0.27638840675354004
+    },
+    {
+      "label": "bull",
+      "score": 0.26876434683799744
+    },
+    {
+      "label": "bison",
+      "score": 0.26548391580581665
+    },
+    {
+      "label": "yak",
+      "score": 0.2608071565628052
+    },
+    {
+      "label": "moose",
+      "score": 0.25795555114746094
+    }
+  ],
+  "0 4.png": [
+    {
+      "label": "panda",
+      "score": 0.2840046286582947
+    },
+    {
+      "label": "badger",
+      "score": 0.27246150374412537
+    },
+    {
+      "label": "raccoon",
+      "score": 0.27237194776535034
+    },
+    {
+      "label": "dog",
+      "score": 0.2713293433189392
+    },
+    {
+      "label": "wolf",
+      "score": 0.2682313919067383
+    }
+  ],
+  "0 5.png": [
+    {
+      "label": "fox",
+      "score": 0.26358702778816223
+    },
+    {
+      "label": "red panda",
+      "score": 0.26210087537765503
+    },
+    {
+      "label": "lynx",
+      "score": 0.2476719468832016
+    },
+    {
+      "label": "raccoon",
+      "score": 0.24433046579360962
+    },
+    {
+      "label": "goldfish",
+      "score": 0.2328552007675171
+    }
+  ],
+  "0 6.png": [
+    {
+      "label": "lynx",
+      "score": 0.2556827664375305
+    },
+    {
+      "label": "cat",
+      "score": 0.25377556681632996
+    },
+    {
+      "label": "puma",
+      "score": 0.2361442893743515
+    },
+    {
+      "label": "jaguar",
+      "score": 0.2332397997379303
+    },
+    {
+      "label": "bat",
+      "score": 0.23310726881027222
+    }
+  ],
+  "0 7.png": [
+    {
+      "label": "koala",
+      "score": 0.3044414222240448
+    },
+    {
+      "label": "koala",
+      "score": 0.3044414222240448
+    },
+    {
+      "label": "rhinoceros",
+      "score": 0.2917324900627136
+    },
+    {
+      "label": "wombat",
+      "score": 0.2883548140525818
+    },
+    {
+      "label": "buffalo",
+      "score": 0.2875176966190338
+    }
+  ],
+  "0 8.png": [
+    {
+      "label": "donkey",
+      "score": 0.2778732180595398
+    },
+    {
+      "label": "moose",
+      "score": 0.2762743830680847
+    },
+    {
+      "label": "antelope",
+      "score": 0.2744714319705963
+    },
+    {
+      "label": "rhinoceros",
+      "score": 0.2736181318759918
+    },
+    {
+      "label": "gazelle",
+      "score": 0.2707955837249756
+    }
+  ],
+  "0 9.png": [
+    {
+      "label": "lynx",
+      "score": 0.25430136919021606
+    },
+    {
+      "label": "lion",
+      "score": 0.25198209285736084
+    },
+    {
+      "label": "wombat",
+      "score": 0.24977034330368042
+    },
+    {
+      "label": "jaguar",
+      "score": 0.2465326189994812
+    },
+    {
+      "label": "puma",
+      "score": 0.2456492781639099
+    }
+  ]
+}

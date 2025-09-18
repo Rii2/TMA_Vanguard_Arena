@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<!-- File: index.html | Purpose: Main landing layout and battle UI scaffold. | Notes: Updated to support SP gauge and dark hero background. -->
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TMA Vanguard Arena</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="hero">
+
+    <div class="hero__overlay">
+      <p class="hero__eyebrow">TACTICAL CREATURE DUEL</p>
+      <h1 class="hero__title">TMA Vanguard Arena</h1>
+      <p class="hero__lead">ランダムに選ばれたビーストと共に三連戦を制覇せよ。<br>コマンドの読み合いと特性コンボで勝利をつかもう。</p>
+      <div class="hero__actions">
+        <button id="start-btn" class="btn btn--primary">ゲーム開始</button>
+        <a href="#abilities" class="btn btn--ghost">動物図鑑を見る</a>
+      </div>
+    </div>
+  </header>
+  <main>
+    <section id="game" class="game" aria-live="polite">
+      <div class="stage-progress" id="stage-progress">
+        <div class="stage-progress__item" data-stage="0">
+          <span class="stage-progress__label">第1戦 EASY</span>
+          <span class="stage-progress__dot"></span>
+        </div>
+        <div class="stage-progress__item" data-stage="1">
+          <span class="stage-progress__label">第2戦 NORMAL</span>
+          <span class="stage-progress__dot"></span>
+        </div>
+        <div class="stage-progress__item" data-stage="2">
+          <span class="stage-progress__label">最終戦 HARD</span>
+          <span class="stage-progress__dot"></span>
+        </div>
+      </div>
+      <div class="battlefield">
+        <article class="combatant combatant--player">
+          <div class="combatant__header">
+            <span class="combatant__role">PLAYER</span>
+            <h2 class="combatant__name" id="player-name">---</h2>
+          </div>
+          <div class="combatant__image-frame" id="player-image-frame">
+            <span class="combatant__placeholder">[NO ENTRY]</span>
+            <img id="player-image" class="combatant__image" alt="プレイヤー側カード">
+          </div>
+          <div class="stat-block">
+            <div class="hp-bar" aria-label="プレイヤーHP">
+              <div class="hp-bar__value" id="player-hp"></div>
+            </div>
+            <div class="sp-bar" aria-label="プレイヤーSP">
+              <span class="sp-bar__label">SP</span>
+              <div class="sp-bar__track">
+                <div class="sp-bar__value" id="player-sp"></div>
+              </div>
+              <span class="sp-bar__count" id="player-sp-count">0 / 10</span>
+            </div>
+            <dl class="stat-list" id="player-stats"></dl>
+          </div>
+          <ul class="status-list" id="player-status"></ul>
+          <div class="ability-detail">
+            <p class="ability-detail__type" id="player-type">タイプ: ---</p>
+            <p class="ability-detail__name" id="player-ability-name">特技: ---</p>
+            <p class="ability-detail__desc" id="player-ability-desc">特技は戦闘開始後に表示されます。</p>
+          </div>
+        </article>
+        <div class="versus-badge">VS</div>
+        <article class="combatant combatant--enemy">
+          <div class="combatant__header">
+            <span class="combatant__role">ENEMY</span>
+            <h2 class="combatant__name" id="enemy-name">---</h2>
+          </div>
+          <div class="combatant__image-frame" id="enemy-image-frame">
+            <span class="combatant__placeholder">[NO ENTRY]</span>
+            <img id="enemy-image" class="combatant__image" alt="敵側カード">
+          </div>
+          <div class="stat-block">
+            <div class="hp-bar" aria-label="敵HP">
+              <div class="hp-bar__value" id="enemy-hp"></div>
+            </div>
+            <div class="sp-bar" aria-label="エネミーSP">
+              <span class="sp-bar__label">SP</span>
+              <div class="sp-bar__track">
+                <div class="sp-bar__value" id="enemy-sp"></div>
+              </div>
+              <span class="sp-bar__count" id="enemy-sp-count">0 / 10</span>
+            </div>
+            <dl class="stat-list" id="enemy-stats"></dl>
+          </div>
+          <ul class="status-list" id="enemy-status"></ul>
+          <div class="ability-detail">
+            <p class="ability-detail__type" id="enemy-type">タイプ: ---</p>
+            <p class="ability-detail__name" id="enemy-ability-name">特技: ---</p>
+            <p class="ability-detail__desc" id="enemy-ability-desc">特技は戦闘開始後に表示されます。</p>
+          </div>
+        </article>
+      </div>
+      <div class="turn-banner" id="turn-banner">
+        <span class="turn-banner__label">第1戦: EASY</span>
+        <span class="turn-banner__sub" id="turn-indicator">ターン 1</span>
+      </div>
+      <div class="battle-console">
+        <section class="battle-console__column battle-console__column--log">
+          <div class="game-log" id="game-log" aria-live="polite"></div>
+        </section>
+        <section class="battle-console__column battle-console__column--commands">
+          <div class="command-panel" id="command-panel">
+            <button class="command" data-command="attack">
+              <span class="command__title">攻撃</span>
+              <span class="command__desc">標準攻撃。チャージ中は与ダメージが上昇。</span>
+            </button>
+            <button class="command" data-command="guard">
+              <span class="command__title">守り</span>
+              <span class="command__desc">このターンの被ダメージを大幅軽減し、近接攻撃に反撃。</span>
+            </button>
+            <button class="command" data-command="skill">
+              <span class="command__title">特技</span>
+              <span class="command__desc">ビースト固有の能力を発動し、局面を変える。</span>
+            </button>
+            <button class="command" data-command="break">
+              <span class="command__title">崩し</span>
+              <span class="command__desc">防御を崩す奇襲。行動後は素早さが少し低下。</span>
+            </button>
+          </div>
+          <div class="next-stage" id="next-stage" hidden>
+            <p id="next-stage-message">CLEAR!</p>
+            <button class="btn btn--primary" id="next-stage-btn">次の戦いへ</button>
+          </div>
+          <div class="game-over" id="game-over" hidden>
+            <h3 id="game-over-title">RESULT</h3>
+            <p id="game-over-message"></p>
+            <button class="btn btn--primary" id="restart-btn">キャンペーン再挑戦</button>
+          </div>
+        </section>
+      </div>
+    </section>
+    <section class="guide" id="guide">
+      <div class="guide__content">
+        <h2>遊び方</h2>
+        <p>プレイヤーと敵は同時にコマンドを選択し、素早さが高い順に解決します。EASY→NORMAL→HARDの三連戦すべてに勝利すれば完全制覇です。</p>
+        <div class="command-guide">
+          <div class="command-guide__item">
+            <h3>攻撃</h3>
+            <p>基本的な打撃。敵の状態やバフ／デバフで与ダメージが変化します。</p>
+          </div>
+          <div class="command-guide__item">
+            <h3>守り</h3>
+            <p>そのターンの被ダメージを抑え、近接攻撃を受けると反撃します。</p>
+          </div>
+          <div class="command-guide__item">
+            <h3>特技</h3>
+            <p>選ばれたビースト固有の能力。回復・強化・妨害など多彩な効果を持ちます。</p>
+          </div>
+          <div class="command-guide__item">
+            <h3>崩し</h3>
+            <p>防御を崩す奇襲。守りを多用する相手への切り札ですが、行動後はやや鈍ります。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="ability-catalog" id="abilities">
+      <div class="ability-catalog__header">
+        <h2>動物図鑑と特性一覧</h2>
+        <p>プレイヤーも敵もこの図鑑からランダムに選ばれます。各ビーストのステータスと特技を把握し、勝利の方程式を組み立てましょう。</p>
+      </div>
+      <div class="ability-grid" id="ability-grid"></div>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <small>&copy; 2025 TMA Vanguard Arena</small>
+  </footer>
+  <script src="game-data.js"></script>
+  <script defer src="game.js"></script>
+</body>
+</html>
+
+
