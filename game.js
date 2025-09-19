@@ -83,7 +83,19 @@ const dom = {
 
   abilityGrid: document.getElementById("ability-grid"),
 
-  skillButton: document.querySelector('.command[data-command="skill"]')
+  skillButton: document.querySelector('.command[data-command="skill"]'),
+
+  // クリア画面の要素
+  clearOverlay: document.getElementById("game-clear-overlay"),
+  clearPlayerImage: document.getElementById("clear-player-image"),
+  clearPlayerName: document.getElementById("clear-player-name"),
+  clearEnemy1Image: document.getElementById("clear-enemy-1-image"),
+  clearEnemy1Name: document.getElementById("clear-enemy-1-name"),
+  clearEnemy2Image: document.getElementById("clear-enemy-2-image"),
+  clearEnemy2Name: document.getElementById("clear-enemy-2-name"),
+  clearEnemy3Image: document.getElementById("clear-enemy-3-image"),
+  clearEnemy3Name: document.getElementById("clear-enemy-3-name"),
+  clearRestartBtn: document.getElementById("clear-restart-btn")
 
 };
 
@@ -173,6 +185,7 @@ const gameState = {
   enemy: null,
   phase: null,
   log: [],
+  enemyHistory: [],  // 敵の履歴を保存する配列
   turnActions: {
     player: null,
     enemy: null
@@ -1560,9 +1573,7 @@ function tickStatuses(combatant) {
 
 
 function handleStageClear() {
-
   setCommandsDisabled(true);
-
   setPhase(null);
   gameState.awaitingNext = true;
 
@@ -1574,16 +1585,44 @@ function handleStageClear() {
   markStageState(gameState.stageIndex, "complete");
   pushLog(stage.label + " をクリア！");
 
-  if (gameState.stageIndex < stages.length - 1) {
-
-    dom.nextStageMessage.textContent = stage.label + " CLEAR!";
-
-    dom.nextStage.hidden = false;
-
+  // 敵の情報を履歴に保存
+  if (gameState.enemy && gameState.enemy.animal) {
+    const enemyData = {
+      name: gameState.enemy.displayName,
+      image: gameState.enemy.animal.image,
+      animal: {
+        ...gameState.enemy.animal,
+        image: gameState.enemy.animal.image
+      },
+      round: gameState.stageIndex + 1  // ラウンド番号を1から始める
+    };
+    
+    console.log('Saving enemy data:', enemyData);
+    
+    // 履歴配列が未初期化の場合は初期化
+    if (!gameState.enemyHistory) {
+      gameState.enemyHistory = [];
+    }
+    
+    // 同じラウンドの記録があれば更新、なければ追加
+    const existingIndex = gameState.enemyHistory.findIndex(e => e.round === enemyData.round);
+    if (existingIndex >= 0) {
+      gameState.enemyHistory[existingIndex] = enemyData;
+    } else {
+      gameState.enemyHistory.push(enemyData);
+    }
+    
+    console.log(`Round ${enemyData.round} enemy saved:`, enemyData);
   } else {
+    console.error('Enemy or enemy.animal is missing:', gameState.enemy);
+  }
 
-    showGameOver(true);
-
+  if (gameState.stageIndex < stages.length - 1) {
+    dom.nextStageMessage.textContent = stage.label + " CLEAR!";
+    dom.nextStage.hidden = false;
+  } else {
+    // 全ステージクリア時の処理
+    showGameClear();
   }
 
 }
@@ -1628,8 +1667,102 @@ function showGameOver(isVictory) {
 
 }
 
-function proceedNextStage() {
+function showGameClear() {
+  console.log('Showing game clear screen');
+  console.log('Player:', gameState.player);
+  console.log('Enemy History:', gameState.enemyHistory);
 
+  function setImageWithErrorHandling(imageElement, imagePath, altText) {
+    if (!imageElement) return;
+    
+    // エラーハンドラを先に設定
+    imageElement.onerror = function() {
+      console.error(`Failed to load image: ${imagePath}`);
+      // エラー時は画像を非表示にする
+      this.style.display = 'none';
+    };
+    
+    // 画像を表示状態に
+    imageElement.style.display = 'block';
+    imageElement.src = imagePath;
+    imageElement.alt = altText || '';
+  }
+
+  // プレイヤー情報を設定
+  if (gameState.player && gameState.player.animal) {
+    if (dom.clearPlayerName) {
+      // プレイヤー名を設定
+      dom.clearPlayerName.textContent = gameState.player.displayName;
+    }
+    
+    // プレイヤーの動物画像を設定
+    if (dom.clearPlayerImage && gameState.player.animal.image) {
+      const playerImagePath = `soldier/${gameState.player.animal.image}`;
+      console.log('Setting player image:', playerImagePath, gameState.player.animal);
+      setImageWithErrorHandling(dom.clearPlayerImage, playerImagePath, gameState.player.animal.name);
+    } else {
+      console.error('Missing player image data:', gameState.player);
+    }
+
+    // 動物の名前を表示
+    const animalNameEl = document.getElementById('clear-player-animal');
+    if (animalNameEl && gameState.player.animal.name) {
+      animalNameEl.textContent = gameState.player.animal.name;
+    }
+  } else {
+    console.error('Player or animal data missing:', gameState.player);
+  }
+
+  // 各ラウンドの敵の情報を設定
+  if (gameState.enemyHistory && Array.isArray(gameState.enemyHistory)) {
+    console.log('Processing enemy history:', gameState.enemyHistory);
+    
+    // 一度全ての表示をクリア
+    for (let i = 1; i <= 3; i++) {
+      const nameEl = dom[`clearEnemy${i}Name`];
+      const imageEl = dom[`clearEnemy${i}Image`];
+      if (nameEl) {
+        nameEl.textContent = "---";
+      }
+      if (imageEl) {
+        imageEl.removeAttribute('src');
+        imageEl.style.display = 'none';
+        imageEl.alt = "";
+      }
+    }
+
+    // ラウンドごとに正しい位置に敵の情報を設定
+    gameState.enemyHistory.forEach(enemy => {
+      if (enemy && enemy.round && enemy.animal) {
+        const nameEl = dom[`clearEnemy${enemy.round}Name`];
+        const imageEl = dom[`clearEnemy${enemy.round}Image`];
+        
+        if (nameEl) {
+          nameEl.textContent = enemy.name || '???';
+        }
+        
+        if (imageEl && enemy.animal.image) {
+          const enemyImagePath = `soldier/${enemy.animal.image}`;
+          console.log(`Setting Round ${enemy.round} enemy image:`, enemyImagePath);
+          setImageWithErrorHandling(imageEl, enemyImagePath, enemy.name);
+        } else {
+          console.error(`Missing image data for enemy round ${enemy.round}:`, enemy);
+        }
+      }
+    });
+  }
+
+  // クリア画面を表示
+  dom.clearOverlay.hidden = false;
+
+  // リスタートボタンのイベントリスナーを設定
+  dom.clearRestartBtn.addEventListener('click', () => {
+    dom.clearOverlay.hidden = true;
+    resetGame();
+  }, { once: true });
+}
+
+function proceedNextStage() {
   dom.nextStage.hidden = true;
 
   const nextIndex = gameState.stageIndex + 1;
@@ -1979,8 +2112,23 @@ function initGameUI() {
 
   dom.restartBtn?.addEventListener("click", startGame);
 
-
-
+  // デバッグ: 即座に勝利するボタンのイベントリスナー
+  dom.debugInstantWin?.addEventListener("click", () => {
+    if (!gameState.active) return;
+    // 敵のHPを0にする
+    gameState.enemy.hp = 0;
+    // 戦闘履歴に記録
+    if (!gameState.enemyHistory) {
+      gameState.enemyHistory = [];
+    }
+    gameState.enemyHistory.push({
+      name: gameState.enemy.displayName,
+      animal: gameState.enemy.animal
+    });
+    // ステージクリア処理
+    handleStageClear();
+    renderAll();
+  });
 }
 
 

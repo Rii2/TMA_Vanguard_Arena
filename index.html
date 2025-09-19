@@ -9,12 +9,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="clear-screen.css">
 </head>
 <body>
   <header class="hero">
     <div class="hero__overlay">
       <div class="hero__logo">
-        <img src="TMA icon_01.png" alt="TMAファミリーのエンブレム" width="500" height="500">
+        <img src="TMA icon_01.png" alt="TMAファミリーのエンブレム" width="250" height="250">
       </div>
       <p class="hero__eyebrow">THE MAFIA ANIMAL</p>
       <h1 class="hero__title">TMA Battle Arena</h1>
@@ -180,6 +181,50 @@
       <div class="ability-grid" id="ability-grid"></div>
     </section>
   </main>
+  <div class="game-clear-overlay" id="game-clear-overlay" hidden>
+    <div class="game-clear-popup">
+      <div class="clear-header">
+        <h2 class="clear-title">MISSION COMPLETE</h2>
+        <div class="clear-subtitle">作戦完了</div>
+      </div>
+      
+      <div class="clear-content">
+        <div class="clear-commander">
+          <div class="clear-commander-portrait">
+            <img id="clear-player-image" class="clear-commander-image" alt="">
+          </div>
+          <div class="clear-commander-info">
+            <span id="clear-player-name" class="clear-commander-name"></span>
+            <span class="clear-commander-title">指揮官</span>
+            <span id="clear-player-animal" class="clear-commander-animal"></span>
+          </div>
+        </div>
+
+        <div class="clear-battles">
+          <div class="clear-battles-grid">
+            <div class="clear-battle-card">
+              <span class="clear-battle-round">1st</span>
+              <img id="clear-enemy-1-image" class="clear-battle-image" alt="">
+              <span id="clear-enemy-1-name" class="clear-battle-name"></span>
+            </div>
+            <div class="clear-battle-card">
+              <span class="clear-battle-round">2nd</span>
+              <img id="clear-enemy-2-image" class="clear-battle-image" alt="">
+              <span id="clear-enemy-2-name" class="clear-battle-name"></span>
+            </div>
+            <div class="clear-battle-card">
+              <span class="clear-battle-round">3rd</span>
+              <img id="clear-enemy-3-image" class="clear-battle-image" alt="">
+              <span id="clear-enemy-3-name" class="clear-battle-name"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="clear-button" id="clear-restart-btn">NEW GAME</button>
+    </div>
+  </div>
+
   <footer class="site-footer">
     <small>&copy; 2025 TMA Battle Arena</small>
   </footer>
