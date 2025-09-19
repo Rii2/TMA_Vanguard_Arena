@@ -1,4 +1,4 @@
-// File: game.js | Purpose: Runs battle flow, UI rendering, and turn resolution for TMA Vanguard Arena. | Notes: Updated for SP resource system and mafia-themed roster.
+﻿// File: game.js | Purpose: Runs battle flow, UI rendering, and turn resolution for TMA Vanguard Arena. | Notes: Updated for SP resource system and mafia-themed roster.
 const dataSource = window.TMA_DATA;
 if (!dataSource) {
   throw new Error('TMA_DATA missing. Ensure game-data.js is loaded before game.js.');
@@ -82,47 +82,66 @@ const dom = {
 
 
 const stages = [
-
-  { label: "EASY", modifier: 0.9, aiEdge: 0.8 },
-
-  { label: "NORMAL", modifier: 1, aiEdge: 1 },
-
-  { label: "HARD", modifier: 1.15, aiEdge: 1.25 }
-
+  { label: "1st ROUND", modifier: 0.9, aiEdge: 0.8 },
+  { label: "2nd ROUND", modifier: 1, aiEdge: 1 },
+  { label: "3rd ROUND", modifier: 1.15, aiEdge: 1.25, key: "hard" }
 ];
 
 
 
 const COMMAND_LABELS = {
-
-  attack: "攻撃",
-
-  guard: "守り",
-
-  skill: "特技",
-
-  break: "崩し"
-
+  attack: "アタック",
+  guard: "ガード",
+  skill: "スキル",
+  break: "ブレイク"
 };
+
+const TURN_PHASE_DELAY_MS = 520;
+const POST_ACTION_DELAY_MS = 360;
+const FRAME_STATE_CLASSES = ["is-turn", "is-attacking", "is-guarding"];
+
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function getCombatantRole(combatant) {
+  return combatant === gameState.player ? "player" : "enemy";
+}
+
+function getFrameByRole(role) {
+  return role === "player" ? dom.playerImageFrame : dom.enemyImageFrame;
+}
+
+function clearFrameStates(role) {
+  const frame = getFrameByRole(role);
+  if (!frame) return;
+  FRAME_STATE_CLASSES.forEach((cls) => frame.classList.remove(cls));
+}
+
+function addFrameStates(role, ...states) {
+  const frame = getFrameByRole(role);
+  if (!frame) return;
+  states.forEach((cls) => frame.classList.add(cls));
+}
+
+function setPhase(phase) {
+  gameState.phase = phase;
+  renderTurnIndicator();
+}
+
+
 
 
 
 const gameState = {
-
   active: false,
-
   awaitingNext: false,
-
   stageIndex: 0,
-
   turn: 1,
-
   player: null,
-
   enemy: null,
-
+  phase: null,
   log: []
-
 };
 
 
@@ -139,7 +158,7 @@ const abilityHandlers = {
 
     effect.evasionChance = Math.max(effect.evasionChance, 0.35);
 
-    effect.log.push(`${combatant.displayName}は影走りで一気に距離を詰めた！`);
+    effect.log.push(combatant.displayName + "はスキルを発動した。");
 
   },
 
@@ -153,7 +172,7 @@ const abilityHandlers = {
 
     effect.applyStatuses.push({ target: "self", key: "regen", value: Math.max(4, Math.round(combatant.maxHp * 0.06)), turns: 2, stack: true });
 
-    effect.log.push(`${combatant.displayName}はフォレストリズムで${heal}回復し、再生効果を得た。`);
+    effect.log.push(combatant.displayName + "はスキルを発動した。");
 
   },
 
@@ -169,7 +188,7 @@ const abilityHandlers = {
 
     effect.applyStatuses.push({ target: "self", key: "thorns", value: 0.3, turns: 1 });
 
-    effect.log.push(`${combatant.displayName}は鉄壁の構えで反撃態勢に入った。`);
+    effect.log.push(combatant.displayName + "はスキルを発動した。");
 
   },
 
@@ -183,7 +202,7 @@ const abilityHandlers = {
 
     effect.applyStatuses.push({ target: "self", key: "attackUp", value: 0.15, turns: 2 });
 
-    effect.log.push(`${combatant.displayName}は竹気功で${heal}回復し、闘志を高めた。`);
+    effect.log.push(combatant.displayName + "はスキルを発動した。");
 
   },
 
@@ -197,7 +216,7 @@ const abilityHandlers = {
 
     effect.targetStatuses.push({ key: "attackDown", value: 0.15, turns: 2 });
 
-    effect.log.push(`${combatant.displayName}は幻惑ステップで${target.displayName}の視界を揺さぶった。`);
+    effect.log.push(combatant.displayName + "はスキルを発動した。");
 
   },
 
@@ -211,7 +230,7 @@ const abilityHandlers = {
 
     effect.selfDamage = 8;
 
-    effect.log.push(`${combatant.displayName}は切り裂きの爪で装甲を切り裂く！`);
+    effect.log.push(combatant.displayName + "はスキルを発動した。");
 
   },
 
@@ -225,7 +244,7 @@ const abilityHandlers = {
 
     effect.applyStatuses.push({ target: "self", key: "regen", value: Math.max(5, Math.round(combatant.maxHp * 0.07)), turns: 3, stack: true });
 
-    effect.log.push(`${combatant.displayName}はユーカリの香りで${heal}回復し、持久戦に備える。`);
+    effect.log.push(combatant.displayName + "はスキルを発動した。");
 
   },
 
@@ -239,7 +258,7 @@ const abilityHandlers = {
 
     effect.applyStatuses.push({ target: "self", key: "attackUp", value: 0.12, turns: 2 });
 
-    effect.log.push(`${combatant.displayName}は踏ん張り、反撃の力を蓄えた。`);
+    effect.log.push(combatant.displayName + "はスキルを発動した。");
 
   },
 
@@ -251,7 +270,7 @@ const abilityHandlers = {
 
     effect.targetStatuses.push({ key: "defenseDown", value: 0.2, turns: 2 });
 
-    effect.log.push(`${combatant.displayName}はトリックバナナで${target.displayName}の体勢を崩した！`);
+    effect.log.push(combatant.displayName + "はスキルを発動した。");
 
   },
 
@@ -265,7 +284,7 @@ const abilityHandlers = {
 
     effect.applyStatuses.push({ target: "self", key: "speedDown", value: 2, turns: 1 });
 
-    effect.log.push(`${combatant.displayName}の大地震動！${target.displayName}の動きが鈍る。`);
+    effect.log.push(combatant.displayName + "はスキルを発動した。");
 
   },
 
@@ -279,7 +298,7 @@ const abilityHandlers = {
 
     effect.applyStatuses.push({ target: "self", key: "speedUp", value: 4, turns: 2, stack: true });
 
-    effect.log.push(`${combatant.displayName}はチーズラッシュで守りをすり抜けた！`);
+    effect.log.push(combatant.displayName + "はスキルを発動した。");
 
   },
 
@@ -295,7 +314,7 @@ const abilityHandlers = {
 
     effect.applyStatuses.push({ target: "self", key: "attackUp", value: 0.25, turns: 1 });
 
-    effect.log.push(`${combatant.displayName}は死んだふりで${heal}回復し、反撃の機をうかがう。`);
+    effect.log.push(combatant.displayName + "はスキルを発動した。");
 
   },
 
@@ -307,7 +326,7 @@ const abilityHandlers = {
 
     effect.applyStatuses.push({ target: "self", key: "charge", value: 0.6, turns: 2 });
 
-    effect.log.push(`${combatant.displayName}は満腹チャージで${heal}回復し、力を溜め込んだ。`);
+    effect.log.push(combatant.displayName + "はスキルを発動した。");
 
   },
 
@@ -319,7 +338,7 @@ const abilityHandlers = {
 
     effect.evasionChance = Math.max(effect.evasionChance, 0.25);
 
-    effect.log.push(`${combatant.displayName}はラピッドステップで一瞬にして懐へ潜る。`);
+    effect.log.push(combatant.displayName + "はスキルを発動した。");
 
   },
 
@@ -331,7 +350,7 @@ const abilityHandlers = {
 
     effect.targetStatuses.push({ key: "attackDown", value: 0.1, turns: 2 });
 
-    effect.log.push(`${combatant.displayName}は${target.displayName}の力を巧みに奪い取った！`);
+    effect.log.push(combatant.displayName + "はスキルを発動した。");
 
   },
 
@@ -343,7 +362,7 @@ const abilityHandlers = {
 
     effect.applyStatuses.push({ target: "self", key: "speedDown", value: 3, turns: 2 });
 
-    effect.log.push(`${combatant.displayName}は貫角突進で装甲を粉砕する！`);
+    effect.log.push(combatant.displayName + "はスキルを発動した。");
 
   },
 
@@ -357,7 +376,7 @@ const abilityHandlers = {
 
     effect.applyStatuses.push({ target: "self", key: "defenseUp", value: 0.12, turns: 2 });
 
-    effect.log.push(`${combatant.displayName}は雄叫びで士気を高め、${heal}回復した。`);
+    effect.log.push(combatant.displayName + "はスキルを発動した。");
 
   },
 
@@ -369,7 +388,7 @@ const abilityHandlers = {
 
     effect.applyStatuses.push({ target: "self", key: "regen", value: 14, turns: 3, stack: true });
 
-    effect.log.push(`${combatant.displayName}は雲綿バリアで身を包んだ。`);
+    effect.log.push(combatant.displayName + "はスキルを発動した。");
 
   },
 
@@ -383,7 +402,7 @@ const abilityHandlers = {
 
     effect.applyStatuses.push({ target: "self", key: "attackUp", value: 0.22, turns: 2 });
 
-    effect.log.push(`${combatant.displayName}は急所を見据えた！防御を無視する構えだ。`);
+    effect.log.push(combatant.displayName + "はスキルを発動した。");
 
   },
 
@@ -399,7 +418,7 @@ const abilityHandlers = {
 
     effect.speedMod += 2;
 
-    effect.log.push(`${combatant.displayName}はカウンタージャンプで受け流しの構え。`);
+    effect.log.push(combatant.displayName + "はスキルを発動した。");
 
   },
 
@@ -413,7 +432,7 @@ const abilityHandlers = {
 
     effect.targetStatuses.push({ key: "attackDown", value: 0.2, turns: 2 });
 
-    effect.log.push(`${combatant.displayName}は咆哮連撃で${target.displayName}を萎縮させた！`);
+    effect.log.push(combatant.displayName + "はスキルを発動した。");
 
   }
 
@@ -445,10 +464,9 @@ function gainSp(combatant, amount = CONFIG.sp.gainPerTurn) {
 function commitSkillCost(combatant, effect) {
   if (!effect?.spCost || !combatant) return;
   spendSp(combatant, effect.spCost);
-  pushLog(`${combatant.displayName}はSPを${effect.spCost}消費した。`);
+  pushLog(combatant.displayName + "はSPを" + effect.spCost + "消費した。");
 }
 
-};
 
 function populateAbilityGrid() {
 
@@ -458,34 +476,21 @@ function populateAbilityGrid() {
 
   animals.forEach((animal) => {
 
-    const shortName = animal.displayName.length > 7 ? `${animal.displayName.slice(0, 7)}…` : animal.displayName;
-
     const card = document.createElement("article");
 
     card.className = "ability-card";
 
     card.innerHTML = `
-
       <div class="ability-card__header">
-
-        <span class="ability-card__name">${shortName}</span>
-
+        <span class="ability-card__name">${animal.displayName}</span>
       </div>
-
       <img src="${animal.image}" alt="${animal.displayName}" class="ability-card__image">
-
       <div class="ability-card__body">
-
         <div class="ability-card__meta">HP ${animal.stats.hp} / ATK ${animal.stats.attack} / DEF ${animal.stats.defense} / SPD ${animal.stats.speed}</div>
-
-        <div class="ability-card__ability">${animal.ability.name}<span class="ability-card__cost">SP${animal.ability.spCost}</span></div>
-
+        <div class="ability-card__ability"><span class="ability-card__skill-name">${animal.ability.name}</span><span class="ability-card__cost">SP${animal.ability.spCost}</span></div>
         <p class="ability-card__desc">${animal.ability.description}</p>
-
         <p class="ability-card__desc">${animal.flavor}</p>
-
       </div>
-
     `;
 
     dom.abilityGrid.appendChild(card);
@@ -512,9 +517,9 @@ function resetCombatantPanels() {
 
   renderResourceBar(dom.playerSpBar, dom.playerSpCount, 0, CONFIG.sp.max);
 
-  dom.playerAbilityName.textContent = "特技: ---";
+  dom.playerAbilityName.textContent = "---";
 
-  dom.playerAbilityDesc.textContent = "特技は戦闘開始後に表示されます。";
+  dom.playerAbilityDesc.textContent = "スキル情報はバトル開始後に表示されます。";
 
   updateSkillButtonCopy(null);
 
@@ -534,13 +539,12 @@ function resetCombatantPanels() {
 
   renderResourceBar(dom.enemySpBar, dom.enemySpCount, 0, CONFIG.sp.max);
 
-  dom.enemyAbilityName.textContent = "特技: ---";
+  dom.enemyAbilityName.textContent = "---";
 
-  dom.enemyAbilityDesc.textContent = "特技は戦闘開始後に表示されます。";
+  dom.enemyAbilityDesc.textContent = "スキル情報はバトル開始後に表示されます。";
 
 
 
-}
 
 
 
@@ -557,6 +561,8 @@ function resetGameState() {
   gameState.player = null;
 
   gameState.enemy = null;
+
+  gameState.phase = null;
 
   gameState.log = [];
 
@@ -581,7 +587,6 @@ function resetGameState() {
 
 
 function startGame() {
-
   resetGameState();
 
   const playerAnimal = getRandomAnimal();
@@ -589,28 +594,28 @@ function startGame() {
   gameState.player = createCombatant(playerAnimal, 1);
 
   gameState.active = true;
+  gameState.phase = null;
+
+  if (dom.startBtn) {
+    dom.startBtn.disabled = true;
+  }
 
   dom.nextStage.hidden = true;
-
   dom.gameOver.hidden = true;
 
-  pushLog(`あなたの相棒は【${gameState.player.displayName}】だ！`);
+  pushLog("あなたの相棒は「" + gameState.player.displayName + "」だ！");
 
   setupStage(0);
 
   setCommandsDisabled(false);
-
 }
 
 
-
 function setupStage(index) {
-
   gameState.stageIndex = index;
-
   gameState.turn = 1;
-
   gameState.awaitingNext = false;
+  gameState.phase = null;
 
   const stage = stages[index];
 
@@ -618,14 +623,17 @@ function setupStage(index) {
 
   gameState.enemy = createCombatant(enemyAnimal, stage.modifier);
 
-  pushLog(`第${index + 1}戦（${stage.label}）開始！相手は【${gameState.enemy.displayName}】。`);
+  pushLog(stage.label + " 開始！相手は「" + gameState.enemy.displayName + "」。");
 
-  dom.turnBanner.querySelector(".turn-banner__label").textContent = `第${index + 1}戦: ${stage.label}`;
+  const label = dom.turnBanner.querySelector(".turn-banner__label");
+  if (label) {
+  label.textContent = "SP" + cost + "で固有スキルを発動できます。";
+  }
+
+  markStageState(index, "active");
 
   renderAll();
-
 }
-
 
 
 function getRandomAnimal(excludeSlug) {
@@ -718,7 +726,7 @@ function setCommandsDisabled(disabled) {
 
 
 
-function handleCommand(event) {
+async function handleCommand(event) {
 
   if (!gameState.active || gameState.awaitingNext) return;
 
@@ -734,27 +742,10 @@ function handleCommand(event) {
 
   }
 
-  executeTurn(command);
+  await executeTurn(command);
 
 }
-
-
-
-function highlightSelectedCommand(command) {
-
-  const buttons = dom.commandPanel.querySelectorAll(".command");
-
-  buttons.forEach((btn) => {
-
-    btn.classList.toggle("is-selected", btn.dataset.command === command);
-
-  });
-
-}
-
-
-
-function executeTurn(playerCommand) {
+async function executeTurn(playerCommand) {
 
   setCommandsDisabled(true);
 
@@ -762,9 +753,7 @@ function executeTurn(playerCommand) {
 
   const enemyCommand = chooseEnemyCommand(playerCommand);
 
-  pushLog(`>> あなた: ${COMMAND_LABELS[playerCommand]} / 敵: ${COMMAND_LABELS[enemyCommand]}`);
-
-
+  pushLog(">> プレイヤー: " + COMMAND_LABELS[playerCommand] + " / エネミー: " + COMMAND_LABELS[enemyCommand]);
 
   const playerEffect = prepareEffect(gameState.player, playerCommand, gameState.enemy);
 
@@ -774,7 +763,7 @@ function executeTurn(playerCommand) {
 
   commitSkillCost(gameState.enemy, enemyEffect);
 
-
+  renderAll();
 
   const playerSpeed = getEffectiveSpeed(gameState.player) + playerEffect.speedMod;
 
@@ -810,8 +799,6 @@ function executeTurn(playerCommand) {
 
       ]);
 
-
-
   let battleEnded = false;
 
   for (const action of order) {
@@ -824,7 +811,7 @@ function executeTurn(playerCommand) {
 
     }
 
-    const ended = performAction(action);
+    const ended = await performAction(action);
 
     if (ended) {
 
@@ -834,9 +821,9 @@ function executeTurn(playerCommand) {
 
     }
 
+    await wait(POST_ACTION_DELAY_MS);
+
   }
-
-
 
   if (!battleEnded) {
 
@@ -844,11 +831,7 @@ function executeTurn(playerCommand) {
 
   }
 
-
-
   renderAll();
-
-
 
   if (gameState.player.hp <= 0) {
 
@@ -867,6 +850,26 @@ function executeTurn(playerCommand) {
   }
 
 }
+
+
+}
+
+
+
+
+function highlightSelectedCommand(command) {
+
+  const buttons = dom.commandPanel.querySelectorAll(".command");
+
+  buttons.forEach((btn) => {
+
+    btn.classList.toggle("is-selected", btn.dataset.command === command);
+
+  });
+
+}
+
+
 
 function chooseEnemyCommand(playerCommand) {
 
@@ -1028,15 +1031,16 @@ function prepareEffect(combatant, command, target) {
 
   } else if (command === "attack") {
 
-    effect.log.push(`${combatant.displayName}の攻撃！`);
+    effect.log.push(combatant.displayName + "のアタック！");
 
   } else if (command === "guard") {
 
-    effect.log.push(`${combatant.displayName}は身を固めた。`);
+    effect.log.push(combatant.displayName + "はガードを構えた。");
 
   } else if (command === "break") {
 
-    effect.log.push(`${combatant.displayName}は防御を崩す構えで突っ込む！`);
+    effect.log.push(combatant.displayName + "はブレイクで壁を崩しにかかる！");
+
 
   }
 
@@ -1048,89 +1052,129 @@ function prepareEffect(combatant, command, target) {
 
 
 
-function performAction({ actor, target, effect, targetEffect }) {
+async function performAction({ actor, target, effect, targetEffect }) {
 
   effect.log.forEach((msg) => pushLog(msg));
 
+  const actorRole = getCombatantRole(actor);
+  const targetRole = getCombatantRole(target);
 
+  clearFrameStates(actorRole);
+  addFrameStates(actorRole, "is-turn");
+  setPhase(actorRole);
+  renderAll();
+
+  await wait(TURN_PHASE_DELAY_MS);
 
   if (effect.heal > 0) {
 
-    applyHeal(actor, effect.heal, `${actor.displayName}は${effect.heal}回復した。`);
+    applyHeal(actor, effect.heal, actor.displayName + "は" + effect.heal + "回復した。");
+
+    renderAll();
+
+    await wait(POST_ACTION_DELAY_MS);
 
   }
 
-
+  let battleEnded = false;
 
   if (effect.attackMultiplier > 0) {
 
     if (target.hp <= 0) {
 
-      return true;
-
-    }
-
-    let evasion = targetEffect.evasionChance || 0;
-
-    evasion += getStatusValue(target, "evasion");
-
-    evasion = Math.min(0.75, evasion);
-
-    if (Math.random() < evasion) {
-
-      pushLog(`${target.displayName}は巧みにかわした！`);
+      battleEnded = true;
 
     } else {
 
-      const damage = calculateDamage(actor, target, effect, targetEffect);
+      const guardActive = targetEffect.guard && !effect.ignoreGuard;
 
-      if (damage <= 0) {
+      clearFrameStates(actorRole);
 
-        pushLog(`${target.displayName}へのダメージは通らなかった。`);
+      addFrameStates(actorRole, "is-turn", "is-attacking");
+
+      if (guardActive) {
+
+        clearFrameStates(targetRole);
+
+        addFrameStates(targetRole, "is-guarding");
+
+      }
+
+      renderAll();
+
+      await wait(TURN_PHASE_DELAY_MS);
+
+      let evasion = targetEffect.evasionChance || 0;
+
+      evasion += getStatusValue(target, "evasion");
+
+      evasion = Math.min(0.75, evasion);
+
+      if (Math.random() < evasion) {
+
+        pushLog(target.displayName + "は身軽に回避した！");
 
       } else {
 
-        applyDamage(target, damage, `${target.displayName}に${damage}のダメージ！`);
+        const damage = calculateDamage(actor, target, effect, targetEffect);
 
-        if (effect.lifeSteal > 0) {
+        if (guardActive) {
 
-          const leech = Math.max(1, Math.round(damage * effect.lifeSteal));
-
-          applyHeal(actor, leech, `${actor.displayName}は吸収で${leech}回復した。`);
+          pushLog(target.displayName + "はガードで攻撃を防いだ！");
 
         }
 
-        const thorns = getStatusValue(target, "thorns");
+        if (damage <= 0) {
 
-        if (thorns > 0) {
+          pushLog(target.displayName + "はダメージを受けなかった。");
 
-          const thornDamage = Math.max(3, Math.round(damage * thorns));
+        } else {
 
-          applyDamage(actor, thornDamage, `${target.displayName}の反射で${actor.displayName}が${thornDamage}の反動！`, true);
+          applyDamage(target, damage, target.displayName + "に" + damage + "ダメージ！");
+
+          if (effect.lifeSteal > 0) {
+
+            const leech = Math.max(1, Math.round(damage * effect.lifeSteal));
+
+            applyHeal(actor, leech, actor.displayName + "は吸収で" + leech + "回復した。");
+
+          }
+
+          const thorns = getStatusValue(target, "thorns");
+
+          if (thorns > 0) {
+
+            const thornDamage = Math.max(3, Math.round(damage * thorns));
+
+            applyDamage(actor, thornDamage, target.displayName + "の棘が" + actor.displayName + "に" + thornDamage + "ダメージを返した！", true);
+
+          }
+
+          if (guardActive && targetEffect.counterMultiplier > 0 && effect.attackMultiplier > 0) {
+
+            const counter = Math.max(3, Math.round(getEffectiveAttack(target) * targetEffect.counterMultiplier));
+
+            applyDamage(actor, counter, target.displayName + "のカウンター！" + actor.displayName + "に" + counter + "ダメージ。");
+
+          }
 
         }
 
-        if (targetEffect.guard && targetEffect.counterMultiplier > 0 && effect.attackMultiplier > 0) {
+        if (effect.selfDamage > 0) {
 
-          const counter = Math.max(3, Math.round(getEffectiveAttack(target) * targetEffect.counterMultiplier));
-
-          applyDamage(actor, counter, `${target.displayName}の反撃！${actor.displayName}に${counter}のダメージ。`);
+          applyDamage(actor, effect.selfDamage, actor.displayName + "は反動で" + effect.selfDamage + "ダメージを受けた。", true);
 
         }
 
       }
 
-      if (effect.selfDamage > 0) {
+      renderAll();
 
-        applyDamage(actor, effect.selfDamage, `${actor.displayName}は反動で${effect.selfDamage}のダメージ。`, true);
-
-      }
+      await wait(POST_ACTION_DELAY_MS);
 
     }
 
   }
-
-
 
   effect.applyStatuses.forEach((status) => {
 
@@ -1146,30 +1190,33 @@ function performAction({ actor, target, effect, targetEffect }) {
 
   });
 
+  clearFrameStates(actorRole);
 
+  clearFrameStates(targetRole);
+
+  setPhase(null);
+
+  renderAll();
 
   if (actor.hp <= 0) {
 
-    pushLog(`${actor.displayName}は力尽きた…`);
+    pushLog(actor.displayName + "は戦闘不能になった。");
 
-    return true;
+    battleEnded = true;
 
   }
 
   if (target.hp <= 0) {
 
-    pushLog(`${target.displayName}を倒した！`);
+    pushLog(target.displayName + "を撃破！");
 
-    return true;
+    battleEnded = true;
 
   }
 
-
-
-  return false;
+  return battleEnded;
 
 }
-
 
 
 function applyStatus(combatant, key, value, turns, stack = false) {
@@ -1276,7 +1323,7 @@ function calculateDamage(attacker, defender, effect, defenderEffect = {}) {
 
     multiplier += charge;
 
-    pushLog(`${attacker.displayName}のチャージが解放された！`);
+    pushLog(attacker.displayName + "のチャージが解放された！");
 
     consumeStatus(attacker, "charge");
 
@@ -1366,7 +1413,7 @@ function endOfTurn() {
 
     if (regen > 0) {
 
-      applyHeal(combatant, regen, `${combatant.displayName}は再生効果で${regen}回復した。`);
+      applyHeal(combatant, regen, combatant.displayName + "は再生効果で" + regen + "回復した。");
 
     }
 
@@ -1378,7 +1425,7 @@ function endOfTurn() {
 
   gameState.turn += 1;
 
-  dom.turnIndicator.textContent = `ターン ${gameState.turn}`;
+  setPhase(null);
 
   updateSkillButtonState();
 
@@ -1424,15 +1471,17 @@ function handleStageClear() {
 
   setCommandsDisabled(true);
 
+  setPhase(null);
   gameState.awaitingNext = true;
 
   const stage = stages[gameState.stageIndex];
 
   markStageState(gameState.stageIndex, "complete");
+  pushLog(stage.label + " をクリア！");
 
   if (gameState.stageIndex < stages.length - 1) {
 
-    dom.nextStageMessage.textContent = `${stage.label} クリア！`;
+    dom.nextStageMessage.textContent = stage.label + " CLEAR!";
 
     dom.nextStage.hidden = false;
 
@@ -1460,27 +1509,26 @@ function handleDefeat() {
 
 function showGameOver(isVictory) {
 
+  gameState.active = false;
+  gameState.awaitingNext = false;
   dom.nextStage.hidden = true;
-
   dom.gameOver.hidden = false;
 
+  if (dom.startBtn) {
+    dom.startBtn.disabled = false;
+  }
+
+  setPhase(null);
+
   if (isVictory) {
-
     dom.gameOverTitle.textContent = "FULL CLEAR";
-
-    dom.gameOverMessage.textContent = "三連戦を制覇！あなたの戦略が栄光をつかんだ。";
-
+    dom.gameOverMessage.textContent = "全てのラウンドを制覇した！";
   } else {
-
     dom.gameOverTitle.textContent = "DEFEAT";
-
-    dom.gameOverMessage.textContent = "相棒は倒れてしまった…。戦術を練り直して再挑戦しよう。";
-
+    dom.gameOverMessage.textContent = "力尽きてしまった…。整えて再挑戦しよう。";
   }
 
 }
-
-
 
 function proceedNextStage() {
 
@@ -1517,17 +1565,35 @@ function markStageState(index, state) {
 
 
 function renderAll() {
-
   renderCombatants();
 
   renderProgress();
 
   renderLog();
 
-  dom.turnIndicator.textContent = `ターン ${gameState.turn}`;
-  updateSkillButtonState();
+  renderTurnIndicator();
 
+  updateSkillButtonState();
 }
+
+function renderTurnIndicator() {
+  if (!dom.turnIndicator || !dom.turnBanner) return;
+
+  if (gameState.phase === "player") {
+    dom.turnIndicator.textContent = "PLAYER TURN";
+    dom.turnBanner.classList.add("is-player-turn");
+    dom.turnBanner.classList.remove("is-enemy-turn");
+  } else if (gameState.phase === "enemy") {
+    dom.turnIndicator.textContent = "ENEMY TURN";
+    dom.turnBanner.classList.add("is-enemy-turn");
+    dom.turnBanner.classList.remove("is-player-turn");
+  } else {
+    dom.turnIndicator.textContent = "TURN " + gameState.turn;
+    dom.turnBanner.classList.remove("is-player-turn");
+    dom.turnBanner.classList.remove("is-enemy-turn");
+  }
+}
+
 
 
 
@@ -1551,11 +1617,11 @@ function renderCombatants() {
 
   dom.playerImage.src = player.image;
 
-  dom.playerImage.alt = `${player.displayName}のカード`;
+  dom.playerImage.alt = player.displayName + "のカード";
 
   dom.playerImageFrame.classList.add("has-image");
 
-  dom.playerHp.style.width = `${Math.max(0, (player.hp / player.maxHp) * 100)}%`;
+  dom.playerHp.style.width = Math.max(0, (player.hp / player.maxHp) * 100) + "%";
 
   renderResourceBar(dom.playerSpBar, dom.playerSpCount, player.sp, player.maxSp);
 
@@ -1563,7 +1629,7 @@ function renderCombatants() {
 
   dom.playerStatus.innerHTML = createStatusBadges(player);
 
-  dom.playerAbilityName.textContent = `特技: ${player.animal.ability.name} (SP${getSkillCost(player)})`;
+  dom.playerAbilityName.textContent = player.animal.ability.name + " (SP" + getSkillCost(player) + ")";
 
   dom.playerAbilityDesc.textContent = player.animal.ability.description;
 
@@ -1575,11 +1641,11 @@ function renderCombatants() {
 
   dom.enemyImage.src = enemy.image;
 
-  dom.enemyImage.alt = `${enemy.displayName}のカード`;
+  dom.enemyImage.alt = enemy.displayName + "のカード";
 
   dom.enemyImageFrame.classList.add("has-image");
 
-  dom.enemyHp.style.width = `${Math.max(0, (enemy.hp / enemy.maxHp) * 100)}%`;
+  dom.enemyHp.style.width = Math.max(0, (enemy.hp / enemy.maxHp) * 100) + "%";
 
   renderResourceBar(dom.enemySpBar, dom.enemySpCount, enemy.sp, enemy.maxSp);
 
@@ -1587,7 +1653,7 @@ function renderCombatants() {
 
   dom.enemyStatus.innerHTML = createStatusBadges(enemy);
 
-  dom.enemyAbilityName.textContent = `���Z: ${enemy.animal.ability.name} (SP${getSkillCost(enemy)})`;
+  dom.enemyAbilityName.textContent = enemy.animal.ability.name + " (SP" + getSkillCost(enemy) + ")";
 
   dom.enemyAbilityDesc.textContent = enemy.animal.ability.description;
 
@@ -1603,17 +1669,12 @@ function createStatList(combatant) {
 
   const speed = Math.round(getEffectiveSpeed(combatant));
 
-  return `
-
-    <dt>HP</dt><dd>${combatant.hp} / ${combatant.maxHp}</dd>
-
-    <dt>ATK</dt><dd>${attack}</dd>
-
-    <dt>DEF</dt><dd>${defense}</dd>
-
-    <dt>SPD</dt><dd>${speed}</dd>
-
-  `;
+  return [
+    '    <dt>HP</dt><dd>' + combatant.hp + ' / ' + combatant.maxHp + '</dd>',
+    '    <dt>ATK</dt><dd>' + attack + '</dd>',
+    '    <dt>DEF</dt><dd>' + defense + '</dd>',
+    '    <dt>SPD</dt><dd>' + speed + '</dd>'
+  ].join('\n');
 
 }
 
@@ -1621,8 +1682,8 @@ function renderResourceBar(barElement, countElement, value, max) {
   if (!barElement || !countElement || !Number.isFinite(max) || max <= 0) return;
   const clampedValue = Math.max(0, Math.min(max, value));
   const ratio = Math.max(0, Math.min(1, clampedValue / max));
-  barElement.style.width = `${Math.round(ratio * 100)}%`;
-  countElement.textContent = `${Math.round(clampedValue)} / ${max}`;
+  barElement.style.width = Math.round(ratio * 100) + "%";
+  countElement.textContent = Math.round(clampedValue) + " / " + max;
 }
 
 function updateSkillButtonCopy(combatant) {
@@ -1630,7 +1691,7 @@ function updateSkillButtonCopy(combatant) {
   const label = dom.skillButton.querySelector('.command__desc');
   if (!label) return;
   const cost = combatant ? getSkillCost(combatant) : CONFIG.sp.defaultSkillCost;
-  label.textContent = `SP${cost}を消費して特技を放つ。`;
+  label.textContent = "SP" + cost + "で固有スキルを発動できます。";
 }
 
 function updateSkillButtonState() {
@@ -1655,23 +1716,23 @@ function statusLabel(key) {
 
   const labels = {
 
-    attackUp: "攻+",
+    attackUp: "攻↑",
 
-    attackDown: "攻-",
+    attackDown: "攻↓",
 
-    defenseUp: "守+",
+    defenseUp: "守↑",
 
-    defenseDown: "守-",
+    defenseDown: "守↓",
 
-    speedUp: "速+",
+    speedUp: "速↑",
 
-    speedDown: "速-",
+    speedDown: "速↓",
 
     regen: "再生",
 
     charge: "チャージ",
 
-    thorns: "反射",
+    thorns: "棘",
 
     evasion: "回避"
 
@@ -1689,7 +1750,7 @@ function createStatusBadges(combatant) {
 
   if (!entries.length) return "";
 
-  return entries.map(([key, value]) => `<li>${statusLabel(key)} x${value.turns}</li>`).join("");
+  return entries.map(([key, value]) => "<li>" + statusLabel(key) + " x" + value.turns + "</li>").join("");
 
 }
 
@@ -1713,7 +1774,7 @@ function renderProgress() {
 
 function renderLog() {
 
-  dom.log.innerHTML = gameState.log.map((line) => `<p>${line}</p>`).join("");
+  dom.log.innerHTML = gameState.log.map((line) => "<p>" + line + "</p>").join("");
 
   dom.log.scrollTop = dom.log.scrollHeight;
 
@@ -1783,9 +1844,45 @@ function renderInitial() {
 
   renderLog();
 
+  renderTurnIndicator();
+
   updateSkillButtonState();
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

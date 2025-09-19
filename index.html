@@ -14,12 +14,13 @@
   <header class="hero">
 
     <div class="hero__overlay">
-      <p class="hero__eyebrow">TACTICAL CREATURE DUEL</p>
+    <div class="hero__logo">`n      <img src="assets/top-hero.png" alt="マフィア動物ギャング" width="1000" height="1000">`n    </div>
+      <p class="hero__eyebrow">THE MAFIA ANIMAL</p>
       <h1 class="hero__title">TMA Vanguard Arena</h1>
-      <p class="hero__lead">ランダムに選ばれたビーストと共に三連戦を制覇せよ。<br>コマンドの読み合いと特性コンボで勝利をつかもう。</p>
+            <p class="hero__lead">極秘抗争に挑むビースト達を指揮し、読み合いで頂点を奪え。<br>コマンド選択とタイミングでファミリーの未来が決まる。</p>
       <div class="hero__actions">
-        <button id="start-btn" class="btn btn--primary">ゲーム開始</button>
-        <a href="#abilities" class="btn btn--ghost">動物図鑑を見る</a>
+                <button id="start-btn" class="btn btn--primary">ゲーム開始</button>
+                <a href="#abilities" class="btn btn--ghost">図鑑を見る</a>
       </div>
     </div>
   </header>
@@ -27,15 +28,15 @@
     <section id="game" class="game" aria-live="polite">
       <div class="stage-progress" id="stage-progress">
         <div class="stage-progress__item" data-stage="0">
-          <span class="stage-progress__label">第1戦 EASY</span>
+          <span class="stage-progress__label">1st ROUND</span>
           <span class="stage-progress__dot"></span>
         </div>
         <div class="stage-progress__item" data-stage="1">
-          <span class="stage-progress__label">第2戦 NORMAL</span>
+          <span class="stage-progress__label">2nd ROUND</span>
           <span class="stage-progress__dot"></span>
         </div>
         <div class="stage-progress__item" data-stage="2">
-          <span class="stage-progress__label">最終戦 HARD</span>
+          <span class="stage-progress__label">3rd ROUND</span>
           <span class="stage-progress__dot"></span>
         </div>
       </div>
@@ -64,9 +65,8 @@
           </div>
           <ul class="status-list" id="player-status"></ul>
           <div class="ability-detail">
-            <p class="ability-detail__type" id="player-type">タイプ: ---</p>
-            <p class="ability-detail__name" id="player-ability-name">特技: ---</p>
-            <p class="ability-detail__desc" id="player-ability-desc">特技は戦闘開始後に表示されます。</p>
+                        <p class="ability-detail__name" id="player-ability-name">スキル: ---</p>
+            <p class="ability-detail__desc" id="player-ability-desc">スキルは開始時に表示されます。</p>
           </div>
         </article>
         <div class="versus-badge">VS</div>
@@ -94,15 +94,14 @@
           </div>
           <ul class="status-list" id="enemy-status"></ul>
           <div class="ability-detail">
-            <p class="ability-detail__type" id="enemy-type">タイプ: ---</p>
-            <p class="ability-detail__name" id="enemy-ability-name">特技: ---</p>
-            <p class="ability-detail__desc" id="enemy-ability-desc">特技は戦闘開始後に表示されます。</p>
+                        <p class="ability-detail__name" id="enemy-ability-name">スキル: ---</p>
+            <p class="ability-detail__desc" id="enemy-ability-desc">スキルは開始時に表示されます。</p>
           </div>
         </article>
       </div>
       <div class="turn-banner" id="turn-banner">
-        <span class="turn-banner__label">第1戦: EASY</span>
-        <span class="turn-banner__sub" id="turn-indicator">ターン 1</span>
+        <span class="turn-banner__label">1st ROUND</span>
+        <span class="turn-banner__sub" id="turn-indicator">TURN 1</span>
       </div>
       <div class="battle-console">
         <section class="battle-console__column battle-console__column--log">
@@ -111,23 +110,22 @@
         <section class="battle-console__column battle-console__column--commands">
           <div class="command-panel" id="command-panel">
             <button class="command" data-command="attack">
-              <span class="command__title">攻撃</span>
-              <span class="command__desc">標準攻撃。チャージ中は与ダメージが上昇。</span>
+              <span class="command__title">アタック</span>
+              <span class="command__desc">基本攻撃。敵のHPを着実に削ります。</span>
             </button>
             <button class="command" data-command="guard">
-              <span class="command__title">守り</span>
-              <span class="command__desc">このターンの被ダメージを大幅軽減し、近接攻撃に反撃。</span>
+              <span class="command__title">ガード</span>
+              <span class="command__desc">次に受ける攻撃を大幅に軽減し、反撃の布石を築きます。</span>
             </button>
             <button class="command" data-command="skill">
-              <span class="command__title">特技</span>
-              <span class="command__desc">ビースト固有の能力を発動し、局面を変える。</span>
+              <span class="command__title">スキル</span>
+              <span class="command__desc">SPを消費して固有の強力な技を放ちます。</span>
             </button>
             <button class="command" data-command="break">
-              <span class="command__title">崩し</span>
-              <span class="command__desc">防御を崩す奇襲。行動後は素早さが少し低下。</span>
+              <span class="command__title">ブレイク</span>
+              <span class="command__desc">守りを崩し、ガード中の相手に強烈な圧力をかけます。</span>
             </button>
-          </div>
-          <div class="next-stage" id="next-stage" hidden>
+          </div>          <div class="next-stage" id="next-stage" hidden>
             <p id="next-stage-message">CLEAR!</p>
             <button class="btn btn--primary" id="next-stage-btn">次の戦いへ</button>
           </div>
@@ -139,31 +137,20 @@
         </section>
       </div>
     </section>
-    <section class="guide" id="guide">
+        <section class="guide" id="guide">
       <div class="guide__content">
         <h2>遊び方</h2>
-        <p>プレイヤーと敵は同時にコマンドを選択し、素早さが高い順に解決します。EASY→NORMAL→HARDの三連戦すべてに勝利すれば完全制覇です。</p>
+        <p>プレイヤーと敵はコマンドを宣言し、交互に行動して決着を目指します。3ラウンドを勝ち抜き、ファミリーを勝利へ導きましょう。</p>
         <div class="command-guide">
           <div class="command-guide__item">
-            <h3>攻撃</h3>
-            <p>基本的な打撃。敵の状態やバフ／デバフで与ダメージが変化します。</p>
-          </div>
-          <div class="command-guide__item">
-            <h3>守り</h3>
-            <p>そのターンの被ダメージを抑え、近接攻撃を受けると反撃します。</p>
-          </div>
-          <div class="command-guide__item">
-            <h3>特技</h3>
-            <p>選ばれたビースト固有の能力。回復・強化・妨害など多彩な効果を持ちます。</p>
-          </div>
-          <div class="command-guide__item">
-            <h3>崩し</h3>
-            <p>防御を崩す奇襲。守りを多用する相手への切り札ですが、行動後はやや鈍ります。</p>
+            <h3>アタック</h3>
+            <p>最も基本的な攻撃。タイミングを読み、確実にダメージを奪いましょう。</p>
           </div>
         </div>
       </div>
     </section>
-    <section class="ability-catalog" id="abilities">
+
+    <section class="ability-catalog" id="abilities"> id="abilities">
       <div class="ability-catalog__header">
         <h2>動物図鑑と特性一覧</h2>
         <p>プレイヤーも敵もこの図鑑からランダムに選ばれます。各ビーストのステータスと特技を把握し、勝利の方程式を組み立てましょう。</p>
@@ -178,5 +165,15 @@
   <script defer src="game.js"></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
 
 

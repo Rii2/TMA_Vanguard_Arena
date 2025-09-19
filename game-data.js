@@ -3,7 +3,7 @@ window.TMA_DATA = {
   "animals": [
     {
       "slug": "bear",
-      "displayName": "Don Bear Maranzano",
+      "displayName": "クマゴロウ",
       "englishName": "Bear",
       "role": "重量タンク",
       "image": "soldier/bear.png",
@@ -23,7 +23,7 @@ window.TMA_DATA = {
     },
     {
       "slug": "bull",
-      "displayName": "Capo Bull Gambetti",
+      "displayName": "ギュウタ",
       "englishName": "Bull",
       "role": "防壁粉砕",
       "image": "soldier/bull.png",
@@ -43,7 +43,7 @@ window.TMA_DATA = {
     },
     {
       "slug": "cat",
-      "displayName": "Consigliere Cat Genovese",
+      "displayName": "ネコミヤ",
       "englishName": "Cat",
       "role": "高速アタッカー",
       "image": "soldier/cat.png",
@@ -63,7 +63,7 @@ window.TMA_DATA = {
     },
     {
       "slug": "donkey",
-      "displayName": "Enforcer Donkey Rossetti",
+      "displayName": "ロバキチ",
       "englishName": "Donkey",
       "role": "粘りの守護",
       "image": "soldier/donkey.png",
@@ -83,7 +83,7 @@ window.TMA_DATA = {
     },
     {
       "slug": "elephant",
-      "displayName": "Don Elephant Moretti",
+      "displayName": "ゾウベエ",
       "englishName": "Elephant",
       "role": "重装突撃",
       "image": "soldier/elephant.png",
@@ -103,7 +103,7 @@ window.TMA_DATA = {
     },
     {
       "slug": "fox",
-      "displayName": "Broker Fox Bellini",
+      "displayName": "キツネロウ",
       "englishName": "Fox",
       "role": "攪乱アタッカー",
       "image": "soldier/fox.png",
@@ -123,7 +123,7 @@ window.TMA_DATA = {
     },
     {
       "slug": "french_bulldog",
-      "displayName": "Capo French Bulldog Ventresca",
+      "displayName": "ブルドン",
       "englishName": "French Bulldog",
       "role": "士気支援",
       "image": "soldier/french_bulldog.png",
@@ -143,7 +143,7 @@ window.TMA_DATA = {
     },
     {
       "slug": "koala",
-      "displayName": "Underboss Koala Santoro",
+      "displayName": "コアラミ",
       "englishName": "Koala",
       "role": "持久サポート",
       "image": "soldier/koala.png",
@@ -163,7 +163,7 @@ window.TMA_DATA = {
     },
     {
       "slug": "lion",
-      "displayName": "Don Lion Luciano",
+      "displayName": "ライオウ",
       "englishName": "Lion",
       "role": "急所狙い",
       "image": "soldier/lion.png",
@@ -183,7 +183,7 @@ window.TMA_DATA = {
     },
     {
       "slug": "lynx",
-      "displayName": "Capo Lynx Rizzuto",
+      "displayName": "リンクス",
       "englishName": "Lynx",
       "role": "クリティカル",
       "image": "soldier/lynx.png",
@@ -203,7 +203,7 @@ window.TMA_DATA = {
     },
     {
       "slug": "monkey",
-      "displayName": "Broker Monkey Caruso",
+      "displayName": "サルゾー",
       "englishName": "Monkey",
       "role": "状況対応",
       "image": "soldier/monkey.png",
@@ -223,7 +223,7 @@ window.TMA_DATA = {
     },
     {
       "slug": "mouse",
-      "displayName": "Runner Mouse Bianchi",
+      "displayName": "ネズチカ",
       "englishName": "Mouse",
       "role": "スピードスター",
       "image": "soldier/mouse.png",
@@ -243,7 +243,7 @@ window.TMA_DATA = {
     },
     {
       "slug": "opossum",
-      "displayName": "Fixer Opossum Romano",
+      "displayName": "ポサムン",
       "englishName": "Opossum",
       "role": "逆転守備",
       "image": "soldier/opossum.png",
@@ -263,7 +263,7 @@ window.TMA_DATA = {
     },
     {
       "slug": "panda",
-      "displayName": "Don Panda Esposito",
+      "displayName": "パンダム",
       "englishName": "Panda",
       "role": "場持ちヒーラー",
       "image": "soldier/panda.png",
@@ -283,7 +283,7 @@ window.TMA_DATA = {
     },
     {
       "slug": "pig",
-      "displayName": "Lieutenant Pig Vercetti",
+      "displayName": "ブターノ",
       "englishName": "Pig",
       "role": "チャージャー",
       "image": "soldier/pig.png",
@@ -303,7 +303,7 @@ window.TMA_DATA = {
     },
     {
       "slug": "pug",
-      "displayName": "Capo Pug Calabrese",
+      "displayName": "パグミ",
       "englishName": "Pug",
       "role": "守護サポート",
       "image": "soldier/pug.png",
@@ -323,7 +323,7 @@ window.TMA_DATA = {
     },
     {
       "slug": "rabbit",
-      "displayName": "Courier Rabbit Vitale",
+      "displayName": "ウサギン",
       "englishName": "Rabbit",
       "role": "奇襲ファイター",
       "image": "soldier/rabbit.png",
@@ -343,7 +343,7 @@ window.TMA_DATA = {
     },
     {
       "slug": "raccoon",
-      "displayName": "Scout Raccoon Morello",
+      "displayName": "アラグマ",
       "englishName": "Raccoon",
       "role": "吸収アタッカー",
       "image": "soldier/raccoon.png",
@@ -363,7 +363,7 @@ window.TMA_DATA = {
     },
     {
       "slug": "rhino",
-      "displayName": "Don Rhino Castellano",
+      "displayName": "サイゴロ",
       "englishName": "Rhino",
       "role": "反射突撃",
       "image": "soldier/rhino.png",
@@ -383,7 +383,7 @@ window.TMA_DATA = {
     },
     {
       "slug": "sheep",
-      "displayName": "Consigliere Sheep Lupo",
+      "displayName": "ヒツジナ",
       "englishName": "Sheep",
       "role": "継続防御",
       "image": "soldier/sheep.png",
@@ -403,7 +403,7 @@ window.TMA_DATA = {
     },
     {
       "slug": "shiba_inu",
-      "displayName": "Capo Shiba Inu Corleone",
+      "displayName": "シバノス",
       "englishName": "Shiba Inu",
       "role": "士気鼓舞",
       "image": "soldier/shiba_inu.png",
@@ -423,7 +423,7 @@ window.TMA_DATA = {
     },
     {
       "slug": "spotted_hyena",
-      "displayName": "Underboss Spotted Hyena Gravano",
+      "displayName": "ハイエナミ",
       "englishName": "Spotted Hyena",
       "role": "連撃捕食者",
       "image": "soldier/spotted_hyena.png",
@@ -443,7 +443,7 @@ window.TMA_DATA = {
     },
     {
       "slug": "squirrel",
-      "displayName": "Runner Squirrel Mancini",
+      "displayName": "リスゾー",
       "englishName": "Squirrel",
       "role": "支援斥候",
       "image": "soldier/squirrel.png",
@@ -463,7 +463,7 @@ window.TMA_DATA = {
     },
     {
       "slug": "tiger",
-      "displayName": "Don Tiger Gambino",
+      "displayName": "トラジロ",
       "englishName": "Tiger",
       "role": "連撃アタッカー",
       "image": "soldier/tiger.png",
