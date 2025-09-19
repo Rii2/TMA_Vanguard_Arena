@@ -3,7 +3,8 @@ export const CONFIG = {
   sp: {
     max: 10,
     gainPerTurn: 1,
-    defaultSkillCost: 3
+    defaultSkillCost: 3,
+    guardBonus: 2
   },
   combat: {
     logLimit: 60,

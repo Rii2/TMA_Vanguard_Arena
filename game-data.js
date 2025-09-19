@@ -63,7 +63,7 @@ window.TMA_DATA = {
     },
     {
       "slug": "donkey",
-      "displayName": "ロバキチ",
+      "displayName": "ウマキチ",
       "englishName": "Donkey",
       "role": "粘りの守護",
       "image": "soldier/donkey.png",
@@ -486,7 +486,8 @@ window.TMA_DATA = {
     "sp": {
       "max": 10,
       "gainPerTurn": 1,
-      "defaultSkillCost": 3
+      "defaultSkillCost": 3,
+      "guardBonus": 2
     },
     "combat": {
       "logLimit": 60,

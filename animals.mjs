@@ -32,7 +32,7 @@ export const animals = [
   },
   {
     slug: "donkey",
-    displayName: "ロバキチ",
+    displayName: "ウマキチ",
     englishName: "Donkey",
     role: "粘りの守護",
     image: "soldier/donkey.png",

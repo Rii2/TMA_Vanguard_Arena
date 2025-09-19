@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TMA Vanguard Arena</title>
+  <title>TMA Battle Arena</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
@@ -12,15 +12,16 @@
 </head>
 <body>
   <header class="hero">
-
     <div class="hero__overlay">
-    <div class="hero__logo">`n      <img src="assets/top-hero.png" alt="マフィア動物ギャング" width="1000" height="1000">`n    </div>
+      <div class="hero__logo">
+        <img src="TMA icon_01.png" alt="TMAファミリーのエンブレム" width="500" height="500">
+      </div>
       <p class="hero__eyebrow">THE MAFIA ANIMAL</p>
-      <h1 class="hero__title">TMA Vanguard Arena</h1>
-            <p class="hero__lead">極秘抗争に挑むビースト達を指揮し、読み合いで頂点を奪え。<br>コマンド選択とタイミングでファミリーの未来が決まる。</p>
+      <h1 class="hero__title">TMA Battle Arena</h1>
+      <p class="hero__lead">極秘抗争に挑むビーストたちを指揮し、読み合いで頂点を奪え。<br>コマンド選択とタイミングでファミリーの未来が決まる。</p>
       <div class="hero__actions">
-                <button id="start-btn" class="btn btn--primary">ゲーム開始</button>
-                <a href="#abilities" class="btn btn--ghost">図鑑を見る</a>
+        <button id="start-btn" class="btn btn--primary">ゲーム開始</button>
+        <a href="#abilities" class="btn btn--ghost">能力一覧を見る</a>
       </div>
     </div>
   </header>
@@ -48,7 +49,7 @@
           </div>
           <div class="combatant__image-frame" id="player-image-frame">
             <span class="combatant__placeholder">[NO ENTRY]</span>
-            <img id="player-image" class="combatant__image" alt="プレイヤー側カード">
+            <img id="player-image" class="combatant__image" alt="プレイヤーのカード">
           </div>
           <div class="stat-block">
             <div class="hp-bar" aria-label="プレイヤーHP">
@@ -65,11 +66,10 @@
           </div>
           <ul class="status-list" id="player-status"></ul>
           <div class="ability-detail">
-                        <p class="ability-detail__name" id="player-ability-name">スキル: ---</p>
-            <p class="ability-detail__desc" id="player-ability-desc">スキルは開始時に表示されます。</p>
+            <p class="ability-detail__name" id="player-ability-name">---</p>
+            <p class="ability-detail__desc" id="player-ability-desc">スキル情報はバトル開始後に表示されます。</p>
           </div>
         </article>
-        <div class="versus-badge">VS</div>
         <article class="combatant combatant--enemy">
           <div class="combatant__header">
             <span class="combatant__role">ENEMY</span>
@@ -77,13 +77,13 @@
           </div>
           <div class="combatant__image-frame" id="enemy-image-frame">
             <span class="combatant__placeholder">[NO ENTRY]</span>
-            <img id="enemy-image" class="combatant__image" alt="敵側カード">
+            <img id="enemy-image" class="combatant__image" alt="敵のカード">
           </div>
           <div class="stat-block">
             <div class="hp-bar" aria-label="敵HP">
               <div class="hp-bar__value" id="enemy-hp"></div>
             </div>
-            <div class="sp-bar" aria-label="エネミーSP">
+            <div class="sp-bar" aria-label="敵SP">
               <span class="sp-bar__label">SP</span>
               <div class="sp-bar__track">
                 <div class="sp-bar__value" id="enemy-sp"></div>
@@ -94,86 +94,97 @@
           </div>
           <ul class="status-list" id="enemy-status"></ul>
           <div class="ability-detail">
-                        <p class="ability-detail__name" id="enemy-ability-name">スキル: ---</p>
-            <p class="ability-detail__desc" id="enemy-ability-desc">スキルは開始時に表示されます。</p>
+            <p class="ability-detail__name" id="enemy-ability-name">---</p>
+            <p class="ability-detail__desc" id="enemy-ability-desc">スキル情報はバトル開始後に表示されます。</p>
           </div>
         </article>
       </div>
-      <div class="turn-banner" id="turn-banner">
-        <span class="turn-banner__label">1st ROUND</span>
-        <span class="turn-banner__sub" id="turn-indicator">TURN 1</span>
+      <div class="action-summary" id="action-summary">
+        <div class="action-summary__column action-summary__column--player">
+          <span class="action-summary__label">PLAYER</span>
+          <div class="action-summary__value" id="player-action">---</div>
+        </div>
+        <div class="action-summary__column action-summary__column--enemy">
+          <span class="action-summary__label">ENEMY</span>
+          <div class="action-summary__value" id="enemy-action">---</div>
+        </div>
+      </div>
+      <div class="command-toolbar">
+        <div class="command-panel" id="command-panel">
+          <button class="command" data-command="attack">
+            <span class="command__title">アタック</span>
+            <span class="command__desc">最も基本的な攻撃。敵のHPを確実に削ります。</span>
+          </button>
+          <button class="command" data-command="guard">
+            <span class="command__title">ガード</span>
+            <span class="command__desc">敵の攻撃を受け止め、SPが2溜まります。</span>
+          </button>
+          <button class="command" data-command="break">
+            <span class="command__title">ブレイク</span>
+            <span class="command__desc">守りを崩し、ガード中の相手にも圧力をかけます。</span>
+          </button>
+          <button class="command" data-command="skill">
+            <span class="command__title">スキル</span>
+            <span class="command__desc">SPを消費して固有技を放ち、戦況を変えます。</span>
+          </button>
+        </div>
       </div>
       <div class="battle-console">
         <section class="battle-console__column battle-console__column--log">
           <div class="game-log" id="game-log" aria-live="polite"></div>
         </section>
         <section class="battle-console__column battle-console__column--commands">
-          <div class="command-panel" id="command-panel">
-            <button class="command" data-command="attack">
-              <span class="command__title">アタック</span>
-              <span class="command__desc">基本攻撃。敵のHPを着実に削ります。</span>
-            </button>
-            <button class="command" data-command="guard">
-              <span class="command__title">ガード</span>
-              <span class="command__desc">次に受ける攻撃を大幅に軽減し、反撃の布石を築きます。</span>
-            </button>
-            <button class="command" data-command="skill">
-              <span class="command__title">スキル</span>
-              <span class="command__desc">SPを消費して固有の強力な技を放ちます。</span>
-            </button>
-            <button class="command" data-command="break">
-              <span class="command__title">ブレイク</span>
-              <span class="command__desc">守りを崩し、ガード中の相手に強烈な圧力をかけます。</span>
-            </button>
-          </div>          <div class="next-stage" id="next-stage" hidden>
+          <div class="next-stage" id="next-stage" hidden>
             <p id="next-stage-message">CLEAR!</p>
-            <button class="btn btn--primary" id="next-stage-btn">次の戦いへ</button>
+            <button class="btn btn--primary" id="next-stage-btn">次のラウンドへ</button>
           </div>
           <div class="game-over" id="game-over" hidden>
             <h3 id="game-over-title">RESULT</h3>
             <p id="game-over-message"></p>
-            <button class="btn btn--primary" id="restart-btn">キャンペーン再挑戦</button>
+            <button class="btn btn--primary" id="restart-btn">ファミリーを再招集</button>
           </div>
         </section>
       </div>
     </section>
-        <section class="guide" id="guide">
+
+    <section class="guide" id="guide">
       <div class="guide__content">
         <h2>遊び方</h2>
-        <p>プレイヤーと敵はコマンドを宣言し、交互に行動して決着を目指します。3ラウンドを勝ち抜き、ファミリーを勝利へ導きましょう。</p>
+        <p>プレイヤーと敵はコマンドを宣言し、交互に行動して決着を目指します。3ラウンド制のバトルを勝ち抜き、ファミリーを勝利へ導きましょう。</p>
         <div class="command-guide">
           <div class="command-guide__item">
             <h3>アタック</h3>
-            <p>最も基本的な攻撃。タイミングを読み、確実にダメージを奪いましょう。</p>
+            <p>最も基本的な攻撃。敵のHPを確実に削ります。</p>
+          </div>
+          <div class="command-guide__item">
+            <h3>ガード</h3>
+            <p>敵の攻撃を受け止め、SPが2溜まります。</p>
+          </div>
+          <div class="command-guide__item">
+            <h3>ブレイク</h3>
+            <p>守りを崩し、ガード中の相手にも圧力をかけます。</p>
+          </div>
+          <div class="command-guide__item">
+            <h3>スキル</h3>
+            <p>SPを消費して固有技を放ち、戦況を変えます。</p>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="ability-catalog" id="abilities"> id="abilities">
+    <section class="ability-catalog" id="abilities">
       <div class="ability-catalog__header">
-        <h2>動物図鑑と特性一覧</h2>
-        <p>プレイヤーも敵もこの図鑑からランダムに選ばれます。各ビーストのステータスと特技を把握し、勝利の方程式を組み立てましょう。</p>
+        <h2>能力とスキル一覧</h2>
+        <p>プレイヤーと敵の能力を確認し、ラウンドごとの戦略に役立てましょう。</p>
       </div>
       <div class="ability-grid" id="ability-grid"></div>
     </section>
   </main>
   <footer class="site-footer">
-    <small>&copy; 2025 TMA Vanguard Arena</small>
+    <small>&copy; 2025 TMA Battle Arena</small>
   </footer>
   <script src="game-data.js"></script>
   <script defer src="game.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
 

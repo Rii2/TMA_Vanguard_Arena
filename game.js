@@ -1,4 +1,4 @@
-﻿// File: game.js | Purpose: Runs battle flow, UI rendering, and turn resolution for TMA Vanguard Arena. | Notes: Updated for SP resource system and mafia-themed roster.
+// File: game.js | Purpose: Runs battle flow, UI rendering, and turn resolution for TMA Vanguard Arena. | Notes: Updated for SP resource system and mafia-themed roster.
 const dataSource = window.TMA_DATA;
 if (!dataSource) {
   throw new Error('TMA_DATA missing. Ensure game-data.js is loaded before game.js.');
@@ -49,6 +49,14 @@ const dom = {
 
   enemyAbilityDesc: document.getElementById("enemy-ability-desc"),
 
+
+
+  playerAction: document.getElementById("player-action"),
+
+
+
+  enemyAction: document.getElementById("enemy-action"),
+
   turnBanner: document.getElementById("turn-banner"),
 
   turnIndicator: document.getElementById("turn-indicator"),
@@ -96,12 +104,35 @@ const COMMAND_LABELS = {
   break: "ブレイク"
 };
 
+const ABILITY_DESC_FALLBACK = "スキル情報はバトル開始後に表示されます。";
+
 const TURN_PHASE_DELAY_MS = 520;
 const POST_ACTION_DELAY_MS = 360;
 const FRAME_STATE_CLASSES = ["is-turn", "is-attacking", "is-guarding"];
 
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function resetTurnActions() {
+  gameState.turnActions = {
+    player: null,
+    enemy: null
+  };
+}
+
+function formatCommandLabel(command) {
+  if (!command) {
+    return "---";
+  }
+  return COMMAND_LABELS[command] || String(command).toUpperCase();
+}
+
+function renderTurnActions() {
+  if (!dom.playerAction || !dom.enemyAction) return;
+  const actions = gameState.turnActions || { player: null, enemy: null };
+  dom.playerAction.textContent = formatCommandLabel(actions.player);
+  dom.enemyAction.textContent = formatCommandLabel(actions.enemy);
 }
 
 function getCombatantRole(combatant) {
@@ -141,11 +172,60 @@ const gameState = {
   player: null,
   enemy: null,
   phase: null,
-  log: []
+  log: [],
+  turnActions: {
+    player: null,
+    enemy: null
+  }
 };
 
 
 
+
+function setCommandsDisabled(disabled) {
+
+  const buttons = dom.commandPanel.querySelectorAll(".command");
+
+  buttons.forEach((btn) => {
+
+    btn.disabled = disabled;
+
+    if (!disabled) {
+
+      btn.classList.remove("is-selected");
+
+    }
+
+  });
+
+  dom.commandPanel.classList.toggle("is-locked", disabled);
+
+  updateSkillButtonState();
+
+}
+
+
+
+
+async function handleCommand(event) {
+
+  if (!gameState.active || gameState.awaitingNext) return;
+
+  const command = event.currentTarget.dataset.command;
+
+  if (command === "skill" && !canUseSkill(gameState.player)) {
+
+    pushLog("SPが足りません。");
+
+    updateSkillButtonState();
+
+    return;
+
+  }
+
+  await executeTurn(command);
+
+}
 const abilityHandlers = {
 
   dashStrike({ combatant, effect }) {
@@ -519,7 +599,7 @@ function resetCombatantPanels() {
 
   dom.playerAbilityName.textContent = "---";
 
-  dom.playerAbilityDesc.textContent = "スキル情報はバトル開始後に表示されます。";
+  dom.playerAbilityDesc.textContent = ABILITY_DESC_FALLBACK;
 
   updateSkillButtonCopy(null);
 
@@ -541,12 +621,11 @@ function resetCombatantPanels() {
 
   dom.enemyAbilityName.textContent = "---";
 
-  dom.enemyAbilityDesc.textContent = "スキル情報はバトル開始後に表示されます。";
+  dom.enemyAbilityDesc.textContent = ABILITY_DESC_FALLBACK;
 
+  renderTurnActions();
 
-
-
-
+}
 
 function resetGameState() {
 
@@ -565,6 +644,8 @@ function resetGameState() {
   gameState.phase = null;
 
   gameState.log = [];
+
+  resetTurnActions();
 
   dom.gameOver.hidden = true;
 
@@ -587,6 +668,7 @@ function resetGameState() {
 
 
 function startGame() {
+
   resetGameState();
 
   const playerAnimal = getRandomAnimal();
@@ -594,13 +676,17 @@ function startGame() {
   gameState.player = createCombatant(playerAnimal, 1);
 
   gameState.active = true;
+
   gameState.phase = null;
 
   if (dom.startBtn) {
+
     dom.startBtn.disabled = true;
+
   }
 
   dom.nextStage.hidden = true;
+
   dom.gameOver.hidden = true;
 
   pushLog("あなたの相棒は「" + gameState.player.displayName + "」だ！");
@@ -608,8 +694,8 @@ function startGame() {
   setupStage(0);
 
   setCommandsDisabled(false);
-}
 
+}
 
 function setupStage(index) {
   gameState.stageIndex = index;
@@ -617,23 +703,25 @@ function setupStage(index) {
   gameState.awaitingNext = false;
   gameState.phase = null;
 
+  resetTurnActions();
+
   const stage = stages[index];
-
   const enemyAnimal = getRandomAnimal(gameState.player.animal.slug);
-
   gameState.enemy = createCombatant(enemyAnimal, stage.modifier);
 
   pushLog(stage.label + " 開始！相手は「" + gameState.enemy.displayName + "」。");
 
-  const label = dom.turnBanner.querySelector(".turn-banner__label");
-  if (label) {
-  label.textContent = "SP" + cost + "で固有スキルを発動できます。";
+  if (dom.turnBanner) {
+    const label = dom.turnBanner.querySelector(".turn-banner__label");
+    if (label) {
+      label.textContent = stage.label;
+    }
   }
 
   markStageState(index, "active");
-
   renderAll();
 }
+
 
 
 function getRandomAnimal(excludeSlug) {
@@ -700,51 +788,6 @@ function createCombatant(animal, modifier = 1) {
 
 }
 
-
-
-function setCommandsDisabled(disabled) {
-
-  const buttons = dom.commandPanel.querySelectorAll(".command");
-
-  buttons.forEach((btn) => {
-
-    btn.disabled = disabled;
-
-    if (!disabled) {
-
-      btn.classList.remove("is-selected");
-
-    }
-
-  });
-
-  dom.commandPanel.classList.toggle("is-locked", disabled);
-
-  updateSkillButtonState();
-
-}
-
-
-
-async function handleCommand(event) {
-
-  if (!gameState.active || gameState.awaitingNext) return;
-
-  const command = event.currentTarget.dataset.command;
-
-  if (command === "skill" && !canUseSkill(gameState.player)) {
-
-    pushLog("SPが足りません。");
-
-    updateSkillButtonState();
-
-    return;
-
-  }
-
-  await executeTurn(command);
-
-}
 async function executeTurn(playerCommand) {
 
   setCommandsDisabled(true);
@@ -752,6 +795,15 @@ async function executeTurn(playerCommand) {
   highlightSelectedCommand(playerCommand);
 
   const enemyCommand = chooseEnemyCommand(playerCommand);
+
+  if (!gameState.turnActions) {
+    resetTurnActions();
+  }
+
+  gameState.turnActions.player = playerCommand;
+  gameState.turnActions.enemy = enemyCommand;
+
+  renderTurnActions();
 
   pushLog(">> プレイヤー: " + COMMAND_LABELS[playerCommand] + " / エネミー: " + COMMAND_LABELS[enemyCommand]);
 
@@ -852,7 +904,6 @@ async function executeTurn(playerCommand) {
 }
 
 
-}
 
 
 
@@ -985,7 +1036,21 @@ function prepareEffect(combatant, command, target) {
 
     spCost: command === "skill" ? getSkillCost(combatant) : 0,
 
-    attackMultiplier: command === "attack" ? 1 : command === "skill" ? 0.7 : command === "break" ? 0.95 : 0,
+    attackMultiplier: (() => {
+      switch (command) {
+        case "attack":
+          return 1;
+        case "skill":
+          return 0.7;
+        case "break":
+          if (target.effect && target.effect.guard) {
+            return 1.5;  // ガード中の相手に対して1.5倍
+          }
+          return 0.8;  // その他の状態の相手に対して0.8倍
+        default:
+          return 0;
+      }
+    })(),
 
     attackBonus: 0,
 
@@ -1171,6 +1236,29 @@ async function performAction({ actor, target, effect, targetEffect }) {
       renderAll();
 
       await wait(POST_ACTION_DELAY_MS);
+
+    }
+
+  }
+
+  if (effect.guard) {
+
+    const guardTarget = CONFIG.sp.guardBonus ?? 0;
+
+    if (guardTarget > 0) {
+
+      const baseGain = CONFIG.sp.gainPerTurn ?? 0;
+
+      let bonus = guardTarget - baseGain;
+
+      if (bonus <= 0) {
+
+        bonus = guardTarget;
+
+      }
+
+      gainSp(actor, bonus);
+
 
     }
 
@@ -1427,6 +1515,8 @@ function endOfTurn() {
 
   setPhase(null);
 
+  resetTurnActions();
+
   updateSkillButtonState();
 
   pulseTurnBanner();
@@ -1436,6 +1526,8 @@ function endOfTurn() {
 
 
 function pulseTurnBanner() {
+
+  if (!dom.turnBanner) return;
 
   dom.turnBanner.classList.remove("is-pulse");
 
@@ -1474,6 +1566,9 @@ function handleStageClear() {
   setPhase(null);
   gameState.awaitingNext = true;
 
+  resetTurnActions();
+  renderTurnActions();
+
   const stage = stages[gameState.stageIndex];
 
   markStageState(gameState.stageIndex, "complete");
@@ -1498,6 +1593,9 @@ function handleStageClear() {
 function handleDefeat() {
 
   setCommandsDisabled(true);
+
+  resetTurnActions();
+  renderTurnActions();
 
   gameState.active = false;
 
@@ -1567,6 +1665,8 @@ function markStageState(index, state) {
 function renderAll() {
   renderCombatants();
 
+  renderTurnActions();
+
   renderProgress();
 
   renderLog();
@@ -1629,9 +1729,21 @@ function renderCombatants() {
 
   dom.playerStatus.innerHTML = createStatusBadges(player);
 
-  dom.playerAbilityName.textContent = player.animal.ability.name + " (SP" + getSkillCost(player) + ")";
+  const playerAbility = player.animal ? player.animal.ability : null;
 
-  dom.playerAbilityDesc.textContent = player.animal.ability.description;
+  if (playerAbility) {
+
+    dom.playerAbilityName.textContent = playerAbility.name + " (SP" + getSkillCost(player) + ")";
+
+    dom.playerAbilityDesc.textContent = playerAbility.description || ABILITY_DESC_FALLBACK;
+
+  } else {
+
+    dom.playerAbilityName.textContent = "---";
+
+    dom.playerAbilityDesc.textContent = ABILITY_DESC_FALLBACK;
+
+  }
 
   updateSkillButtonCopy(player);
 
@@ -1653,9 +1765,21 @@ function renderCombatants() {
 
   dom.enemyStatus.innerHTML = createStatusBadges(enemy);
 
-  dom.enemyAbilityName.textContent = enemy.animal.ability.name + " (SP" + getSkillCost(enemy) + ")";
+  const enemyAbility = enemy.animal ? enemy.animal.ability : null;
 
-  dom.enemyAbilityDesc.textContent = enemy.animal.ability.description;
+  if (enemyAbility) {
+
+    dom.enemyAbilityName.textContent = enemyAbility.name + " (SP" + getSkillCost(enemy) + ")";
+
+    dom.enemyAbilityDesc.textContent = enemyAbility.description || ABILITY_DESC_FALLBACK;
+
+  } else {
+
+    dom.enemyAbilityName.textContent = "---";
+
+    dom.enemyAbilityDesc.textContent = ABILITY_DESC_FALLBACK;
+
+  }
 
 }
 
@@ -1798,47 +1922,16 @@ function pushLog(message) {
 
 
 
-populateAbilityGrid();
-
-renderInitial();
 
 
-
-dom.commandPanel?.querySelectorAll(".command").forEach((button) => {
-
-  button.addEventListener("click", handleCommand);
-
-});
-
-
-
-dom.startBtn?.addEventListener("click", () => {
-
-  startGame();
-
-});
-
-
-
-dom.nextStageBtn?.addEventListener("click", () => {
-
-  proceedNextStage();
-
-});
-
-
-
-dom.restartBtn?.addEventListener("click", () => {
-
-  startGame();
-
-});
 
 function renderInitial() {
 
   setCommandsDisabled(true);
 
   resetCombatantPanels();
+
+  renderTurnActions();
 
   renderProgress();
 
@@ -1852,45 +1945,55 @@ function renderInitial() {
 
 
 
+function initGameUI() {
 
 
 
+  populateAbilityGrid();
 
 
 
+  renderInitial();
 
 
 
+  dom.commandPanel?.querySelectorAll(".command").forEach((button) => {
 
 
 
+    button.addEventListener("click", handleCommand);
 
 
 
+  });
 
 
 
+  dom.startBtn?.addEventListener("click", startGame);
 
 
 
+  dom.nextStageBtn?.addEventListener("click", proceedNextStage);
 
 
 
+  dom.restartBtn?.addEventListener("click", startGame);
 
 
 
+}
 
 
 
+if (document.readyState === 'loading') {
 
+  document.addEventListener('DOMContentLoaded', initGameUI, { once: true });
 
+} else {
 
+  initGameUI();
 
-
-
-
-
-
+}
 
 
 
